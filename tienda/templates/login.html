@@ -1,0 +1,49 @@
+{% extends 'base.html'%} 
+
+{% block content%}
+
+{% if messages %}
+  {% for message in messages %}
+  <section class="col-md-4 offset-md-4 mt-5">
+    <div class="d-flex justify-content-center alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+    </div>
+  </section>
+
+  {% endfor %}
+{% endif %}
+
+<main class="container">
+  <div class="row">
+    <section class="col-md-4 offset-md-4 mt-5">
+      <form action="/login/" method="POST" class="card card-body">
+        <h1 class="text-center">Login</h1>
+
+        {{error}} {% csrf_token %}
+        <div class="mb-3">
+          <label for="usuario">Usuario</label>
+          <input
+            type="text"
+            name="usuario"
+            id="usuario"
+            class="form-control"
+            placeholder="escribe tu usuario"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password">Password</label>
+          <input
+            type="text"
+            name="password"
+            id="password"
+            class="form-control"
+            placeholder="escribe tu password"
+          />
+        </div>
+        <button class="btn btn-primary">Login</button>
+      </form>
+    </section>
+  </div>
+</main>
+
+{% endblock%}
