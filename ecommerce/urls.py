@@ -22,5 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('login/', views.login_view, name='login'),
+    path('registrar/api/consultar-dni/', views.consultar_dni, name='consultar_dni'),
+    path('registrar/verificar-username/', views.verificar_username, name='verificar_username'),
+    path('registrar/verificar-datos-bd/', views.verificar_datos, name='verificar_datos'),
     path('registrar/', views.registrar_usuario, name='registrar_usuario'),
+    path('logout/',views.signoup, name= 'logout'),
+    path('productos/',views.lista_productos, name= 'lista_productos'),
 ]

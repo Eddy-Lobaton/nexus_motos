@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class AuthGroup(models.Model):
@@ -265,6 +266,8 @@ class TblProducto(models.Model):
     prod_aniofabricacion = models.TextField(blank=True, null=True)  # This field type is a guess.
     prod_descripcion = models.CharField(max_length=45, blank=True, null=True)
     prod_fecha_registro = models.DateTimeField()
+    prod_porcenta_dcto = models.DecimalField(max_digits=2, decimal_places=2)
+    prod_imagen = models.CharField(max_length=255)
 
     class Meta:
         managed = False
@@ -318,10 +321,20 @@ class TblTipoUsuario(models.Model):
     def __str__(self):
         return self.tipo_usuario_descrip
 
+class TblUsuario(AbstractUser):
+    id = models.AutoField(primary_key=True, db_column='usuario_id')
+    username = models.CharField(max_length=150, unique=True, verbose_name='Nombre de usuario', db_column='usuario_nombreusuario')
+    password = models.CharField(max_length=255, verbose_name='Contraseña', db_column='usuario_password')  # <- Aquí lo conectas
 
-class TblUsuario(models.Model):
-    usuario_id = models.AutoField(primary_key=True)
-    usuario_nombreusuario = models.CharField(max_length=45)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    email = models.EmailField(blank=True)
+
     usuario_nrodocumento = models.CharField(max_length=45)
     usuario_tipodocumento = models.CharField(max_length=45)
     usuario_nombre = models.CharField(max_length=45)
@@ -331,13 +344,15 @@ class TblUsuario(models.Model):
     usuario_email = models.CharField(max_length=45)
     usuario_sexo = models.CharField(max_length=45)
     usuario_direccion = models.CharField(max_length=45)
-    usuario_password = models.CharField(max_length=32)
-    tipo_usuario = models.ForeignKey(TblTipoUsuario, models.DO_NOTHING)
-    cargo = models.ForeignKey(TblCargo, models.DO_NOTHING)
+    tipo_usuario = models.ForeignKey('TblTipoUsuario', on_delete=models.DO_NOTHING)
+    cargo = models.ForeignKey('TblCargo', on_delete=models.DO_NOTHING)
 
     class Meta:
-        managed = False
         db_table = 'tbl_usuario'
+        managed = False 
+
+    def __str__(self):
+        return self.username
 
 
 class TblVenta(models.Model):

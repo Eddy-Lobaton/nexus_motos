@@ -1,58 +1,93 @@
 # from django.forms import ModelForm
 from django import forms
 from .models import TblUsuario
+from django.contrib.auth.hashers import make_password
+from datetime import date, timedelta
 
 class LoginForm(forms.Form):
     usuario  = forms.CharField(max_length=45, required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
 
+# Opciones para tipo de documento
+TIPO_DOCUMENTO_OPCIONES = [
+    ('', 'Seleccionar...'),
+    ('DNI', 'DNI'),
+    ('CE', 'Carnet de extranjería'),
+]
+SEXO = [
+    ('', 'Seleccionar...'),
+    ('FEMENINO', 'Femenino'),
+    ('MASCULINO', 'Masculino'),
+]
+
 class RegistroUsuarioForm(forms.ModelForm):
     class Meta:
         model = TblUsuario
         fields = [
-            'usuario_nombreusuario',
-            'usuario_password',
-            'usuario_nrodocumento',
             'usuario_tipodocumento',
+            'usuario_nrodocumento',
             'usuario_nombre',
             'usuario_paterno',
             'usuario_materno',
+            'usuario_direccion',           
             'usuario_fechanac',
-            'usuario_email',
             'usuario_sexo',
-            'usuario_direccion',
+            'usuario_email',
+            'cargo',
             'tipo_usuario',
-            'cargo'
+            'username',
+            'password'
         ]
 
         labels = {
-            'usuario_nombreusuario': 'Nombre de usuario',
-            'usuario_password': 'Contraseña',
-            'usuario_nrodocumento': 'Número de documento',
             'usuario_tipodocumento': 'Tipo de documento',
+            'usuario_nrodocumento': 'Número de documento',
             'usuario_nombre': 'Nombre',
             'usuario_paterno': 'Apellido paterno',
             'usuario_materno': 'Apellido materno',
-            'usuario_fechanac': 'Fecha de nacimiento',
-            'usuario_email': 'Correo electrónico',
-            'usuario_sexo': 'Sexo',
             'usuario_direccion': 'Dirección',
-            'tipo_usuario': 'Tipo de usuario',
+            'usuario_fechanac': 'Fecha de nacimiento',
+            'usuario_sexo': 'Sexo',
+            'usuario_email': 'Correo electrónico',
             'cargo': 'Cargo',
+            'tipo_usuario': 'Tipo de usuario',
+            'username': 'Nombre de usuario',
+            'password': 'Contraseña'
         }
 
         widgets = {
-            'usuario_nombreusuario': forms.TextInput(attrs={'class': 'form-control'}),
-            'usuario_password': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'usuario_tipodocumento': forms.Select(choices=TIPO_DOCUMENTO_OPCIONES, attrs={'class': 'form-control'}),
             'usuario_nrodocumento': forms.TextInput(attrs={'class': 'form-control'}),
-            'usuario_tipodocumento': forms.TextInput(attrs={'class': 'form-control'}),
             'usuario_nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'usuario_paterno': forms.TextInput(attrs={'class': 'form-control'}),
             'usuario_materno': forms.TextInput(attrs={'class': 'form-control'}),
-            'usuario_fechanac': forms.TextInput(attrs={'class': 'form-control'}),
-            'usuario_email': forms.TextInput(attrs={'class': 'form-control'}),
-            'usuario_sexo': forms.TextInput(attrs={'class': 'form-control'}),
             'usuario_direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuario_fechanac': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'usuario_sexo': forms.Select(choices=SEXO, attrs={'class': 'form-control'}),
+            'usuario_email': forms.TextInput(attrs={'class': 'form-control'}),
             'cargo': forms.Select(attrs={'class': 'form-control'}),
-            'usuario_fechanac': forms.DateInput(attrs={'type': 'date'}),
+            'tipo_usuario': forms.Select(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Cambiar la etiqueta por defecto
+        self.fields['tipo_usuario'].empty_label = "Seleccionar..."
+        self.fields['cargo'].empty_label = "Seleccionar..."
+
+        # Rango de año para fecha de nacimiento
+        hoy = date.today()
+        edad_min = hoy.replace(year=hoy.year - 70)
+        edad_max = hoy.replace(year=hoy.year - 18)
+        self.fields['usuario_fechanac'].widget.attrs['min'] = edad_min.isoformat()
+        self.fields['usuario_fechanac'].widget.attrs['max'] = edad_max.isoformat()
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.password = make_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user

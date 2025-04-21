@@ -1,8 +1,14 @@
-{% extends 'base.html' %}
+{% extends 'tienda/base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'tienda/css/registro_estilos.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Registrar nuevo usuario</h2>
+    <h2 class="mb-4">Registrar Usuario</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -13,7 +19,7 @@
         {% endfor %}
     {% endif %}
 
-    <form method="post">
+    <form id="formRegistro" method="post">
         {% csrf_token %}
         <div class="row">
             {% for field in form %}
@@ -29,9 +35,20 @@
             {% endfor %}
         </div>
         <div class="row justify-content-center">
-            <button type="submit" class="btn btn-primary">Registrar</button>
+            <button type="submit" id="btnRegistrar" class="btn btn-primary">Registrar</button>
         </div>
-        
     </form>
+    <div id="regFeedback" class=""></div>
 </div>
+<!-- Overlay de carga -->
+<div id="loadingOverlay" style="display: none;">
+    <div class="loading-content">
+        <span class="spinner-border text-light" role="status"></span>
+        <p class="text-light mt-3">Buscando datos del DNI...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'tienda/js/registro.js' %}"></script>
 {% endblock %}
