@@ -9,10 +9,13 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import pymysql #conexion base de datos para railway
+pymysql.install_as_MySQLdb()
 
 from pathlib import Path
 import dj_database_url #conectar railway
 from decouple import config #conectar railway
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
