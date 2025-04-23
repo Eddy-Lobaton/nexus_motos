@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url #conectar railway
+from decouple import config #conectar railway
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-oxhj21oz3%9(&l3!%2(my@tqnzj8@@)n_0gt-l6!b9epc2jp1v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)  #True para desarrollo local y False para RAILWAY... 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -74,15 +76,18 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nexus_motos_',
-        'USER': 'root',
-        'PASSWORD': 'root1234',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(default=config('DATABASE_URL'))
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'nexus_motos_',
+    #     'USER': 'root',
+    #     'PASSWORD': 'GfwOkmPvmQbFqHlsDyHCBvTGRLWXXiWA',
+    #     'HOST': 'yamanote.proxy.rlwy.net',
+    #     'PORT': '37481',
+    # }
 }
+
+    
 
 
 # Password validation
