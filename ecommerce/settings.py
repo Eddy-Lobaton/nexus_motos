@@ -146,4 +146,6 @@ AUTH_USER_MODEL = 'tienda.TblUsuario'
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-CSRF_TRUSTED_ORIGINS = ['https://nexusmotos-production.up.railway.app.railway.app']
+CSRF_TRUSTED_ORIGINS = [
+    'https://nexusmotos-production.up.railway.app'
+]
