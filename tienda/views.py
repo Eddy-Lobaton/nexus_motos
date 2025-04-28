@@ -116,3 +116,6 @@ def lista_productos(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'tienda/productos.html', {'page_obj': page_obj})
 
+def lista_articulos(request):
+    return render(request, 'tienda/articulos.html')
+
