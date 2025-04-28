@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'tienda/css/articulos_estilos.css' %}" />
+<link rel="stylesheet" href="{% static 'tienda/css/proveedores_estilos.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -11,10 +11,10 @@
     <div class="card-body">
         <!-- Título y Botones -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="card-title mb-0">Artículos</h5>
+        <h5 class="card-title mb-0">Proveedores</h5>
         <div>
             <button class="btn btn-primary btn-sm me-2">
-                <a href="{% url 'agregar_articulos' %}" class="btn-add">Agregar</a>
+                <a href="{% url 'agregar_proveedor' %}" class="btn-add">Agregar</a>
             </button>
             <button class="btn btn-success btn-sm">Reporte</button>
         </div>
@@ -25,15 +25,11 @@
         <table class="table table-fixed align-middle">
             <thead>
             <tr>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Motor</th>
-                <th>Año fabrica</th>
-                <th>Stock</th>
-                <th>Imagen</th>
-                <th>Descripción</th>
-                <th>Código</th>
-                <th>Estado</th>
+                <th>Nombre</th>
+                <th>RUC</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Email</th>
                 <th>Editar</th>
             </tr>
             </thead>
@@ -55,5 +51,5 @@
 </div>
 
 {% endblock%} {% block extra_js %}
-<script src="{% static 'tienda/js/articulos.js' %}"></script>
+<script src="{% static 'tienda/js/lista_proveedores.js' %}"></script>
 {% endblock %}

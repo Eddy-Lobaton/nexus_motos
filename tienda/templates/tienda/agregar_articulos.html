@@ -1,0 +1,60 @@
+{% extends 'tienda/base_tres.html'%}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'tienda/css/agregar_articulo_estilos.css' %}">
+{% endblock %} 
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-primary">Artículos</h2>
+    <h4>Agregar artículo</h4>
+    <hr class="border-primary">
+
+    <form enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Marca</label>
+                <input type="text" class="form-control mb-2">
+                <label>Stock</label>
+                <input type="number" class="form-control mb-2">
+                <label>Motor</label>
+                <input type="text" class="form-control mb-2">
+                <label>Imagen</label>
+                <input type="file" class="form-control mb-2">
+            </div>
+            <div class="col-md-6">
+                <label>Modelo</label>
+                <input type="text" class="form-control mb-2">
+                <label>Descripción</label>
+                <input type="text" class="form-control mb-2">
+                <label>Año fabricación</label>
+                <input type="number" class="form-control mb-2">
+                <label>Código</label>
+                <input type="text" id="codigo" class="form-control mb-2">
+                <div class="barcode-preview text-center mt-2">
+                    <svg id="barcode"></svg>
+                </div>
+                <!-- <div class="barcode-buttons mt-3">
+                    <button type="button" id="print-barcode" class="btn btn-info">Imprimir</button>
+                    <button type="button" id="download-barcode" class="btn btn-success">Descargar Imagen</button>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-center gap-2">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="#" class="btn btn-danger">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+{% endblock%}
+
+{% block extra_js %}
+<script src="{% static 'tienda/js/agregar_articulo.js' %}"></script>
+{% endblock %}

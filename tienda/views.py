@@ -119,3 +119,13 @@ def lista_productos(request):
 def lista_articulos(request):
     return render(request, 'tienda/articulos.html')
 
+def agregar_articulos(request):
+    return render(request, 'tienda/agregar_articulos.html')
+
+def lista_proveedores(request):
+    return render(request, 'tienda/lista_proveedores.html')
+
+def agregar_proveedor(request):
+    return render(request, 'tienda/agregar_proveedor.html')
+
+
