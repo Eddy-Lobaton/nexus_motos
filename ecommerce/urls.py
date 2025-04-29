@@ -28,8 +28,10 @@ urlpatterns = [
     path('registrar/', views.registrar_usuario, name='registrar_usuario'),
     path('logout/',views.signoup, name= 'logout'),
     path('productos/',views.lista_productos, name= 'lista_productos'),
-    path('articulos/',views.lista_articulos, name= 'lista_articulos'),
+    path('lista_articulos/',views.lista_articulos, name= 'lista_articulos'),
     path('agregar_articulos/',views.agregar_articulos, name= 'agregar_articulos'),
     path('lista_proveedores/',views.lista_proveedores, name= 'lista_proveedores'),
     path('agregar_proveedor/',views.agregar_proveedor, name= 'agregar_proveedor'),
+    path('lista_ingresos/',views.lista_ingresos, name= 'lista_ingresos'),
+    path('agregar_ingresos/',views.agregar_ingresos, name= 'agregar_ingresos'),
 ]

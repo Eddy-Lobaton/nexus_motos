@@ -1,0 +1,83 @@
+{% extends 'tienda/base_tres.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'tienda/css/agregar_ingresos_estilos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <h4 class="titulo">Ingreso</h4>
+  <h5 class="subtitulo">Agregar ingresos</h5>
+
+  <form>
+    <div class="form-row">
+      <label for="proveedor">Proveedor</label>
+      <input type="text" id="proveedor" name="proveedor">
+    </div>
+
+    <div class="form-row">
+      <label for="tipo-doc">Tipo de documento</label>
+      <select id="tipo-doc" name="tipo-doc">
+        <option value="">Seleccione</option>
+        <option value="factura">Factura</option>
+        <option value="boleta">Boleta</option>
+      </select>
+
+      <label for="num-doc">Número de documento</label>
+      <input type="text" id="num-doc" name="num-doc">
+    </div>
+
+    <button type="button" class="btn-agregar">Agregar artículo</button>
+
+    <table class="tabla-ingresos">
+      <thead>
+        <tr>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Motor</th>
+          <th>Cantidad</th>
+          <th>Precio compra</th>
+          <th style="color: red;">Precio venta</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>01/01/2025</td>
+          <td>222222222222</td>
+          <td>999999999</td>
+          <td>2</td>
+          <td>S/. 5000.00</td>
+          <td style="color: red;">46</td>
+          <td>S/. 10000.00</td>
+        </tr>
+        <!-- Puedes duplicar o reemplazar con datos dinámicos -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="6" class="text-end">Sub total</td>
+          <td>S/. 50000.00</td>
+        </tr>
+        <tr>
+          <td colspan="6" class="text-end">Impuesto (18%)</td>
+          <td>S/. 50000.00</td>
+        </tr>
+        <tr>
+          <td colspan="6" class="text-end"><strong>Total</strong></td>
+          <td><strong>S/. 50000.00</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-guardar">Guardar</button>
+      <button type="button" class="btn-cancelar">Cancelar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Puedes incluir lógica JS si lo necesitas -->
+{% endblock %}

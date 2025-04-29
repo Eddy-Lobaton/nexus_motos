@@ -117,7 +117,7 @@ def lista_productos(request):
     return render(request, 'tienda/productos.html', {'page_obj': page_obj})
 
 def lista_articulos(request):
-    return render(request, 'tienda/articulos.html')
+    return render(request, 'tienda/lista_articulos.html')
 
 def agregar_articulos(request):
     return render(request, 'tienda/agregar_articulos.html')
@@ -128,4 +128,9 @@ def lista_proveedores(request):
 def agregar_proveedor(request):
     return render(request, 'tienda/agregar_proveedor.html')
 
+def lista_ingresos(request):
+    return render(request, 'tienda/lista_ingresos.html')
+
+def agregar_ingresos(request):
+    return render(request, 'tienda/agregar_ingresos.html')
 
