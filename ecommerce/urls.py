@@ -34,4 +34,6 @@ urlpatterns = [
     path('agregar_proveedor/',views.agregar_proveedor, name= 'agregar_proveedor'),
     path('lista_ingresos/',views.lista_ingresos, name= 'lista_ingresos'),
     path('agregar_ingresos/',views.agregar_ingresos, name= 'agregar_ingresos'),
+    path('lista_clientes/',views.lista_clientes, name= 'lista_clientes'),
+    path('agregar_cliente/',views.agregar_cliente, name= 'agregar_cliente'),
 ]

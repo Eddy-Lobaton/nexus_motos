@@ -134,3 +134,9 @@ def lista_ingresos(request):
 def agregar_ingresos(request):
     return render(request, 'tienda/agregar_ingresos.html')
 
+def lista_clientes(request):
+    return render(request, 'tienda/lista_clientes.html')
+
+def agregar_cliente(request):
+    return render(request, 'tienda/agregar_cliente.html')
+
