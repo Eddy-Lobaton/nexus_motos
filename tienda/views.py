@@ -1,9 +1,13 @@
+import os
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from .forms import LoginForm, RegistroUsuarioForm
+
+from django.conf import settings
+from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm
 from .models import TblUsuario, TblProducto
 from django.contrib import messages
 from django.core.paginator import Paginator
+from datetime import datetime
 
 import requests
 from django.http import JsonResponse
@@ -117,10 +121,41 @@ def lista_productos(request):
     return render(request, 'tienda/productos.html', {'page_obj': page_obj})
 
 def lista_articulos(request):
-    return render(request, 'tienda/lista_articulos.html')
+    productos = TblProducto.objects.all()
+    return render(request, 'tienda/lista_articulos.html', {'productos': productos})
+
 
 def agregar_articulos(request):
-    return render(request, 'tienda/agregar_articulos.html')
+    if request.method == 'POST':
+        form = ArticuloForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                producto = form.save(commit=False)
+                imagen = request.FILES.get('imagen_archivo')
+
+                if imagen:
+                    ruta_destino = os.path.join(settings.BASE_DIR, 'staticfiles', 'tienda', 'img')
+                    os.makedirs(ruta_destino, exist_ok=True)
+                    path_final = os.path.join(ruta_destino, imagen.name)
+
+                    with open(path_final, 'wb+') as destino:
+                        for chunk in imagen.chunks():
+                            destino.write(chunk)
+
+                    producto.prod_imagen = imagen.name  # solo el nombre del archivo
+
+                producto.prod_fecha_registro = datetime.now()
+                producto.save()
+                return redirect('lista_articulos')
+            except Exception as e:
+                print(f'Error al guardar el producto: {e}')  # Esto mostrará el error exacto
+        else:
+            print('Formulario inválido:', form.errors)
+    else:
+        form = ArticuloForm()
+
+    return render(request, 'tienda/agregar_articulos.html', {'form': form})
+
 
 def lista_proveedores(request):
     return render(request, 'tienda/lista_proveedores.html')

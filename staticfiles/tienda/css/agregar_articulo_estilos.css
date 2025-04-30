@@ -1,4 +1,4 @@
-.container {
+/*.container {
     background-color: #e0e0e0;
     padding: 20px;
     border-radius: 8px;
@@ -6,3 +6,10 @@
 .barcode-preview img {
     width: 100px;
 }
+*/
+
+.card {
+    padding: 20px;
+    margin-top: 20px;
+}
+

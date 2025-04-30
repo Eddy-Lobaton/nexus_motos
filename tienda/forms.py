@@ -1,8 +1,9 @@
 # from django.forms import ModelForm
 from django import forms
-from .models import TblUsuario
+from .models import TblUsuario, TblProducto
 from django.contrib.auth.hashers import make_password
 from datetime import date, timedelta
+
 
 class LoginForm(forms.Form):
     usuario  = forms.CharField(max_length=45, required=True)
@@ -91,3 +92,22 @@ class RegistroUsuarioForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+class ArticuloForm(forms.ModelForm):
+    imagen_archivo = forms.FileField(
+        required=True,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = TblProducto
+        fields = ['prod_nombre', 'prod_marca', 'prod_modelo', 'prod_motor', 'prod_categoria', 'prod_descripcion']
+        widgets = {
+            'prod_nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_marca': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_modelo': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_motor': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_categoria': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
