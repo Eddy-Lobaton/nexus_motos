@@ -6,7 +6,7 @@ body {
 }
 
 .sidebar {
-  height: 100vh;
+  /*height: 100vh;*/
   background-color: #181f31;
   color: white;
   padding: 1rem;
