@@ -1,6 +1,6 @@
 import os
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
 from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm
@@ -156,6 +156,9 @@ def agregar_articulos(request):
 
     return render(request, 'tienda/agregar_articulos.html', {'form': form})
 
+def detalle_articulo(request, producto_id):
+    producto = get_object_or_404(TblProducto, pk=producto_id)
+    return render(request, 'tienda/detalle_articulo.html', {'producto': producto})
 
 def lista_proveedores(request):
     return render(request, 'tienda/lista_proveedores.html')
