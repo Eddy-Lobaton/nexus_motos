@@ -178,3 +178,9 @@ def lista_clientes(request):
 def agregar_cliente(request):
     return render(request, 'tienda/agregar_cliente.html')
 
+def lista_ventas(request):
+    return render(request, 'tienda/lista_ventas.html')
+
+def agregar_venta(request):
+    return render(request, 'tienda/agregar_venta.html')
+

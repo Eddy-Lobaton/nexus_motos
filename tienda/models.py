@@ -267,6 +267,7 @@ class TblProducto(models.Model):
     prod_descripcion = models.CharField(max_length=45, blank=True, null=True)
     prod_fecha_registro = models.DateTimeField()
     prod_porcenta_dcto = models.DecimalField(max_digits=2, decimal_places=2)
+    prod_estado = models.BooleanField(default=True)
     prod_imagen = models.CharField(max_length=255)
 
     class Meta:
