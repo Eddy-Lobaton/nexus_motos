@@ -37,7 +37,6 @@
                         <th>Modelo</th>
                         <th>Motor</th>
                         <th>Categoría</th>
-                        <th>Descripción</th>
                         <th>Fecha Registro</th>
                         <th>Acciones</th>
                     </tr>
@@ -58,11 +57,10 @@
                                 <span class="badge bg-secondary">{{ producto.prod_categoria }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ producto.prod_descripcion|default:"-" }}</td>
                         <td>{{ producto.prod_fecha_registro|date:"Y-m-d H:i:s" }}</td>
                         <td>
-                            <a href="{% url 'detalle_articulo' producto.prod_id %}" class="btn btn-sm btn-primary" title="Ver"><i class="bi bi-eye"></i></a>
-                            <a href="#" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <a href="{% url 'detalle_articulo' producto.prod_id %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'editar_articulo' producto.prod_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
                             <a href="#" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></a>
                         </td>
                     </tr>

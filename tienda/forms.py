@@ -96,8 +96,11 @@ class RegistroUsuarioForm(forms.ModelForm):
 
 class ArticuloForm(forms.ModelForm):
     imagen_archivo = forms.FileField(
-        required=True,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+        required=False,  # El requerido lo manejamos manualmente en clean()
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*'
+        })
     )
 
     class Meta:
@@ -111,3 +114,17 @@ class ArticuloForm(forms.ModelForm):
             'prod_categoria': forms.TextInput(attrs={'class': 'form-control'}),
             'prod_descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        self.tiene_imagen = kwargs.pop('tiene_imagen', False)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        imagen = self.files.get('imagen_archivo')
+
+        # Si no tiene imagen previa y no se sube una nueva, lanzar error
+        if not self.tiene_imagen and not imagen:
+            self.add_error('imagen_archivo', 'Debes subir una imagen.')
+
+        return cleaned_data

@@ -124,7 +124,6 @@ def lista_articulos(request):
     productos = TblProducto.objects.all()
     return render(request, 'tienda/lista_articulos.html', {'productos': productos})
 
-
 def agregar_articulos(request):
     if request.method == 'POST':
         form = ArticuloForm(request.POST, request.FILES)
@@ -159,6 +158,38 @@ def agregar_articulos(request):
 def detalle_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, pk=producto_id)
     return render(request, 'tienda/detalle_articulo.html', {'producto': producto})
+
+def editar_articulo(request, producto_id):
+    producto = get_object_or_404(TblProducto, prod_id=producto_id)
+    tiene_imagen = bool(producto.prod_imagen)
+
+    if request.method == 'POST':
+        form = ArticuloForm(request.POST, request.FILES, instance=producto, tiene_imagen=tiene_imagen)
+        
+        if form.is_valid():
+            producto = form.save(commit=False)
+            imagen = request.FILES.get('imagen_archivo')
+
+            if imagen:
+                ruta_destino = os.path.join(os.path.dirname(__file__), '..', 'staticfiles', 'tienda', 'img')
+                os.makedirs(ruta_destino, exist_ok=True)
+                path_final = os.path.join(ruta_destino, imagen.name)
+                with open(path_final, 'wb+') as destino:
+                    for chunk in imagen.chunks():
+                        destino.write(chunk)
+                producto.prod_imagen = imagen.name
+
+            producto.save()
+            print("✅ Producto editado exitosamente")
+            return redirect('lista_articulos')
+        else:
+            print("❌ Formulario inválido:")
+            print(form.errors)
+    else:
+        form = ArticuloForm(instance=producto, tiene_imagen=tiene_imagen)
+
+    return render(request, 'tienda/editar_articulo.html', {'form': form, 'producto': producto})
+
 
 def lista_proveedores(request):
     return render(request, 'tienda/lista_proveedores.html')
