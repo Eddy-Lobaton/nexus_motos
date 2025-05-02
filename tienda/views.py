@@ -180,10 +180,10 @@ def editar_articulo(request, producto_id):
                 producto.prod_imagen = imagen.name
 
             producto.save()
-            print("✅ Producto editado exitosamente")
+            print("Producto editado exitosamente")
             return redirect('lista_articulos')
         else:
-            print("❌ Formulario inválido:")
+            print("Formulario inválido:")
             print(form.errors)
     else:
         form = ArticuloForm(instance=producto, tiene_imagen=tiene_imagen)

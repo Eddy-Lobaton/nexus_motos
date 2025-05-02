@@ -116,6 +116,7 @@ class ArticuloForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # Aquí se determina si el producto ya tiene imagen, para luego decidir si la imagen es obligatoria
         self.tiene_imagen = kwargs.pop('tiene_imagen', False)
         super().__init__(*args, **kwargs)
 

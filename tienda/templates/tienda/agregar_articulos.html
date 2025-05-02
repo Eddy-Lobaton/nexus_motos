@@ -21,6 +21,18 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row g-3">
+                    <!-- Mostrar errores de formulario si existen -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger mt-3">
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                     <div class="col-md-6">
                         {{ form.prod_nombre.label_tag }}
                         {{ form.prod_nombre }}
