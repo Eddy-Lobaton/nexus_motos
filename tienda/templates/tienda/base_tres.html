@@ -11,11 +11,12 @@
       <link rel="stylesheet" href="{% static 'tienda/css/base_estilos_tres.css' %}">
       {% block extra_css %}
       {% endblock %}
+      {% csrf_token %}
   </head>
   <body>
 
     <div class="sidebar">
-      <h4 class="text-center mb-4">LOGO</h4>
+      <h4 class="text-center mb-4">NEXUS MOTOS</h4>
       
       <div class="mb-4">
         <input type="text" class="form-control" placeholder="🔍 Buscar">

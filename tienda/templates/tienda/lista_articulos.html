@@ -38,6 +38,7 @@
                         <th>Motor</th>
                         <th>Categoría</th>
                         <th>Fecha Registro</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -48,20 +49,27 @@
                         <td>{{ producto.prod_marca }}</td>
                         <td>{{ producto.prod_modelo }}</td>
                         <td>{{ producto.prod_motor }}</td>
-                        <td>
-                            {% if producto.prod_categoria == "deportiva" %}
-                                <span class="badge bg-success">{{ producto.prod_categoria }}</span>
-                            {% elif producto.prod_categoria == "semideportiva" %}
-                                <span class="badge bg-primary">{{ producto.prod_categoria }}</span>
-                            {% else %}
-                                <span class="badge bg-secondary">{{ producto.prod_categoria }}</span>
-                            {% endif %}
-                        </td>
+                        <td>{{ producto.prod_categoria }}</td>
                         <td>{{ producto.prod_fecha_registro|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox"
+                                    class="toggle-estado"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmarCambioEstadoModal"
+                                    data-producto-id="{{ producto.prod_id }}"
+                                    data-producto-nombre="{{ producto.prod_nombre }}"
+                                    data-producto-estado="{{ producto.prod_estado }}"
+                                    {% if producto.prod_estado %}checked{% endif %}>
+                                <span class="slider">
+                                    <span class="text-on">ON</span>
+                                    <span class="text-off">OFF</span>
+                                </span>
+                            </label>
+                        </td>
                         <td>
                             <a href="{% url 'detalle_articulo' producto.prod_id %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
                             <a href="{% url 'editar_articulo' producto.prod_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
-                            <a href="#" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -84,5 +92,6 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{% static 'tienda/js/lista_articulos.js' %}"></script>
 {% endblock %}

@@ -1,14 +1,14 @@
 const data = [
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
-    {nombre: 'Nexus', ruc: '200SS', telefono: '200', direccion: '2020', email: 99, editar: 46, },
+    {nombre: 'MOTOS CAR EIRL', ruc: '234345465652', telefono: '949 393 993', direccion: 'Madre de Dios', email: 'motoscar@gmail.com', editar: 46, },
+    {nombre: 'NITRO MOTOS SAC', ruc: '2442334d2342', telefono: '934 343 267', direccion: 'Huancayo ', email: 'nitromotos@gmail.com', editar: 46, },
+    {nombre: 'NITRO MOTOS SAC', ruc: '243345465652', telefono: '934 346 234', direccion: 'Huancayo', email: 'nitromotos@gmail.com', editar: 46, },
+    {nombre: 'NITRO MOTOS SAC', ruc: '23435465652', telefono: '934 234 123', direccion: 'Huancayo', email: 'nitromotos@gmail.com', editar: 46, },
+    {nombre: 'MOTOS CAR EIRL', ruc: '234345465652', telefono: '934 453 123', direccion: 'Cusco', email: 'motoscar@gmail.com', editar: 46, },
+    {nombre: 'NITRO MOTOS SAC', ruc: '234345465652', telefono: '934 343 555', direccion: 'Cusco', email: 'nitromotos@gmail.com', editar: 46, },
+    {nombre: 'MOTOS CAR EIRL', ruc: '234345465652', telefono: '934 342 332', direccion: 'Huancayo', email: 'motoscar@gmail.com', editar: 46, },
+    {nombre: 'CARMOTOR SAC', ruc: '234345465652', telefono: '933 343 123', direccion: 'Huancayo', email: 'carmotor@gmail.com', editar: 46, },
+    {nombre: 'CARMOTOR SAC', ruc: '234345465652', telefono: '934 341 234', direccion: 'Huancayo', email: 'carmotor@gmail.com', editar: 46, },
+    {nombre: 'MOTOS CAR EIRL', ruc: '234345465652', telefono: '923 346 342', direccion: 'Huancayo', email: 'motoscar@gmail.com', editar: 46, },
 
 ];
 

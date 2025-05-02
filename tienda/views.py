@@ -11,7 +11,7 @@ from datetime import datetime
 
 import requests
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 
 from django.contrib.auth import get_user_model
 
@@ -161,6 +161,8 @@ def detalle_articulo(request, producto_id):
 
 def editar_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, prod_id=producto_id)
+
+    # Verificamos si el producto tiene una imagen
     tiene_imagen = bool(producto.prod_imagen)
 
     if request.method == 'POST':
@@ -190,6 +192,14 @@ def editar_articulo(request, producto_id):
 
     return render(request, 'tienda/editar_articulo.html', {'form': form, 'producto': producto})
 
+@require_POST
+def cambiar_estado_articulo(request, producto_id):
+    producto = get_object_or_404(TblProducto, prod_id=producto_id)
+    producto.prod_estado = not producto.prod_estado
+    producto.save()
+
+    estado = "activado" if producto.prod_estado else "desactivado"
+    return JsonResponse({"message": f'Artículo "{producto.prod_nombre}" ha sido {estado} correctamente.'})
 
 def lista_proveedores(request):
     return render(request, 'tienda/lista_proveedores.html')

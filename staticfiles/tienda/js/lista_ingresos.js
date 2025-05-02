@@ -1,14 +1,14 @@
 const data = [
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
-    {fecha: 'Nexus', proveedor: '200SS', usuario: '200', costo_total: '2020', tipo_documento: 99, nro_documento: 46, },
+    {fecha: '12/01/2024', proveedor: 'MOTOS CAR EIRL', usuario: 'eddy-lobaton', costo_total: 'S/5,000.00', tipo_documento: 'Boleta', nro_documento: 123-3454, },
+    {fecha: '10/04/2024', proveedor: 'NITRO MOTOS SAC', usuario: 'jose-mamani', costo_total: 'S/6,000.00', tipo_documento: 'Boleta', nro_documento: 124-3454, },
+    {fecha: '15/01/2025', proveedor: 'LIMA MOTOS EIRL', usuario: 'carlos-jose', costo_total: 'S/9,500.00', tipo_documento: 'Factura', nro_documento: 125-3454, },
+    {fecha: '01/01/2025', proveedor: 'CARMOTOR SAC', usuario: 'eddy-lobaton', costo_total: 'S/4,400.00', tipo_documento: 'Factura', nro_documento: 126-3454, },
+    {fecha: '10/10/2024', proveedor: 'MOTOS CAR EIRL', usuario: 'eddy-lobaton', costo_total: 'S/7,500.00', tipo_documento: 'Factura', nro_documento: 127-3454, },
+    {fecha: '23/02/2025', proveedor: 'MOTOS CAR EIRL', usuario: 'jose-mamani', costo_total: 'S/5,000.00', tipo_documento: 'Boleta', nro_documento: 128-3454, },
+    {fecha: '12/10/2024', proveedor: 'CARMOTOR SAC', usuario: 'carlos-jose', costo_total: 'S/6,800.00', tipo_documento: 'Boleta', nro_documento: 129-3454, },
+    {fecha: '12/11/2024', proveedor: 'MOTOS CAR EIRL', usuario: 'carlos-jose', costo_total: 'S/9,400.00', tipo_documento: 'Boleta', nro_documento: 129-3454, },
+    {fecha: '12/01/2025', proveedor: 'MOTOS CAR EIRL', usuario: 'jose-mamani', costo_total: 'S/3,500.00', tipo_documento: 'Boleta', nro_documento: 133-3454, },
+    {fecha: '03/05/2024', proveedor: 'CARMOTOR SAC', usuario: 'jose-mamani', costo_total: 'S/5,199.00', tipo_documento: 'Boleta', nro_documento: 133-3454, },
 
 ];
 
