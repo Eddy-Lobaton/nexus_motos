@@ -1,64 +1,122 @@
-const data = [
-    {marca: 'Nexus', modelo: '200SS', motor: '150', anio: '2020', stock: 9999999999, imagen: 46, descripcion: 46, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 32, imagen: 34, descripcion: 34, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 15, imagen: 27, descripcion: 27, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 10, imagen: 15, descripcion: 15, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 7, imagen: 14, descripcion: 14, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 7, imagen: 14, descripcion: 14, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 7, imagen: 14, descripcion: 14, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 12, imagen: 25, descripcion: 25, codigo: 343232, estado: 'Activo'},
-    {marca: 'Nexus', modelo: '200SS', motor: 'Nexus', anio: '2020', stock: 18, imagen: 20, descripcion: 20, codigo: 343232, estado: 'Activo'},
-];
-
-const rowsPerPage = 6;
-let currentPage = 1;
-
-function renderTable() {
-    const tbody = document.getElementById('table-body');
-    tbody.innerHTML = '';
-
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = data.slice(start, end);
-
-    for (let item of pageData) {
-    tbody.innerHTML += `
-        <tr>
-        <td>${item.marca}</td>
-        <td>${item.modelo}</td>
-        <td>${item.motor}</td>
-        <td>${item.anio}</td>
-        <td>${item.stock}</td>
-        <td>${item.imagen}</td>
-        <td>${item.descripcion}</td>
-        <td>${item.codigo}</td>
-        <td><span class="activo">${item.estado}</span></td>
-        <td><span class="edit-icon">✏️</span></td>
-        </tr>
-    `;
-    }
-}
-
-function renderPagination() {
-    const pagination = document.getElementById('pagination');
-    pagination.innerHTML = '';
-
-    const pageCount = Math.ceil(data.length / rowsPerPage);
-
-    for (let i = 1; i <= pageCount; i++) {
-    const button = document.createElement('button');
-    button.textContent = i;
-    if (i === currentPage) {
-        button.classList.add('active');
-    }
-    button.addEventListener('click', () => {
-        currentPage = i;
-        renderTable();
-        renderPagination();
+$(document).ready(function () {
+    $('#productos-table').DataTable({
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+            lengthMenu: "Mostrar _MENU_ registros",
+            zeroRecords: "No se encontraron resultados",
+            info: "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            infoFiltered: "(filtrado de _MAX_ registros totales)",
+            search: "Buscar:",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+            },
+        },
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        ordering: true,
+        responsive: true,
+        autoWidth: false,
+        columnDefs: [
+            { orderable: false, targets: -1 }  // Columna "Acciones" no ordenable
+        ]
     });
-    pagination.appendChild(button);
-    }
-}
+});
 
-renderTable();
-renderPagination();
+document.addEventListener("DOMContentLoaded", function () {
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    document.querySelectorAll(".toggle-estado").forEach(function (toggle) {
+        toggle.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const switchTrigger = e.target;
+            const id = switchTrigger.getAttribute("data-producto-id");
+            const nombre = switchTrigger.getAttribute("data-producto-nombre");
+            const estado = switchTrigger.getAttribute("data-producto-estado") === "True";
+
+            const mensaje = estado
+                ? `¿Deseas desactivar el artículo "${nombre}"?`
+                : `¿Deseas activar el artículo "${nombre}"?`;
+
+            Swal.fire({
+                title: '¿Confirmar cambio de estado?',
+                text: mensaje,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Procesando...',
+                        text: 'Por favor espera',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/cambiar_estado_articulo/${id}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": csrfToken,
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Error en la respuesta");
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Ocurrió un problema al cambiar el estado.',
+                            icon: 'error',
+                            confirmButtonText: 'Cerrar'
+                        });
+                    });
+                }
+            });
+        });
+    });
+
+
+    const switches = document.querySelectorAll(".toggle-estado");
+
+    switches.forEach(function (input) {
+        const label = input.closest(".switch");
+        const textSpan = label.querySelector(".switch-text");
+
+        const updateText = () => {
+            textSpan.textContent = input.checked ? "ON" : "OFF";
+        };
+
+        // Inicializa texto
+        updateText();
+
+        // Actualiza al hacer clic, pero sin cambiar el estado aún (por el modal)
+        input.addEventListener("click", function (e) {
+            e.preventDefault();  // prevenimos el cambio sin confirmar
+            updateText();        // actualizamos el texto inmediatamente (visual)
+        });
+    });
+
+});

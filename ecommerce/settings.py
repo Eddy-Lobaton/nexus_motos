@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import os
 import pymysql #conexion base de datos para railway
 pymysql.install_as_MySQLdb()
 
@@ -130,11 +131,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Para producción (cuando haces collectstatic):  # para producción   
+#STATIC_ROOT = BASE_DIR / 'staticfiles'  # Para producción (cuando haces collectstatic):  # para producción   
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Solo si estás usando archivos dentro de apps
+#STATICFILES_DIRS = [
+#    BASE_DIR / 'tienda' / 'static',
+#]
+
 STATICFILES_DIRS = [
-    BASE_DIR / 'tienda' / 'static',
+    #os.path.join(BASE_DIR, 'staticfiles'),
 ]
 
 # Default primary key field type

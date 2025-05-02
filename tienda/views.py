@@ -1,13 +1,17 @@
+import os
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
-from .forms import LoginForm, RegistroUsuarioForm
+from django.shortcuts import get_object_or_404, render, redirect
+
+from django.conf import settings
+from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm
 from .models import TblUsuario, TblProducto
 from django.contrib import messages
 from django.core.paginator import Paginator
+from datetime import datetime
 
 import requests
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 
 from django.contrib.auth import get_user_model
 
@@ -117,10 +121,85 @@ def lista_productos(request):
     return render(request, 'tienda/productos.html', {'page_obj': page_obj})
 
 def lista_articulos(request):
-    return render(request, 'tienda/lista_articulos.html')
+    productos = TblProducto.objects.all()
+    return render(request, 'tienda/lista_articulos.html', {'productos': productos})
 
 def agregar_articulos(request):
-    return render(request, 'tienda/agregar_articulos.html')
+    if request.method == 'POST':
+        form = ArticuloForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                producto = form.save(commit=False)
+                imagen = request.FILES.get('imagen_archivo')
+
+                if imagen:
+                    ruta_destino = os.path.join(settings.BASE_DIR, 'staticfiles', 'tienda', 'img')
+                    os.makedirs(ruta_destino, exist_ok=True)
+                    path_final = os.path.join(ruta_destino, imagen.name)
+
+                    with open(path_final, 'wb+') as destino:
+                        for chunk in imagen.chunks():
+                            destino.write(chunk)
+
+                    producto.prod_imagen = imagen.name  # solo el nombre del archivo
+
+                producto.prod_fecha_registro = datetime.now()
+                producto.save()
+                return redirect('lista_articulos')
+            except Exception as e:
+                print(f'Error al guardar el producto: {e}')  # Esto mostrará el error exacto
+        else:
+            print('Formulario inválido:', form.errors)
+    else:
+        form = ArticuloForm()
+
+    return render(request, 'tienda/agregar_articulos.html', {'form': form})
+
+def detalle_articulo(request, producto_id):
+    producto = get_object_or_404(TblProducto, pk=producto_id)
+    return render(request, 'tienda/detalle_articulo.html', {'producto': producto})
+
+def editar_articulo(request, producto_id):
+    producto = get_object_or_404(TblProducto, prod_id=producto_id)
+
+    # Verificamos si el producto tiene una imagen
+    tiene_imagen = bool(producto.prod_imagen)
+
+    if request.method == 'POST':
+        form = ArticuloForm(request.POST, request.FILES, instance=producto, tiene_imagen=tiene_imagen)
+        
+        if form.is_valid():
+            producto = form.save(commit=False)
+            imagen = request.FILES.get('imagen_archivo')
+
+            if imagen:
+                ruta_destino = os.path.join(os.path.dirname(__file__), '..', 'staticfiles', 'tienda', 'img')
+                os.makedirs(ruta_destino, exist_ok=True)
+                path_final = os.path.join(ruta_destino, imagen.name)
+                with open(path_final, 'wb+') as destino:
+                    for chunk in imagen.chunks():
+                        destino.write(chunk)
+                producto.prod_imagen = imagen.name
+
+            producto.save()
+            print("Producto editado exitosamente")
+            return redirect('lista_articulos')
+        else:
+            print("Formulario inválido:")
+            print(form.errors)
+    else:
+        form = ArticuloForm(instance=producto, tiene_imagen=tiene_imagen)
+
+    return render(request, 'tienda/editar_articulo.html', {'form': form, 'producto': producto})
+
+@require_POST
+def cambiar_estado_articulo(request, producto_id):
+    producto = get_object_or_404(TblProducto, prod_id=producto_id)
+    producto.prod_estado = not producto.prod_estado
+    producto.save()
+
+    estado = "activado" if producto.prod_estado else "desactivado"
+    return JsonResponse({"message": f'Artículo "{producto.prod_nombre}" ha sido {estado} correctamente.'})
 
 def lista_proveedores(request):
     return render(request, 'tienda/lista_proveedores.html')

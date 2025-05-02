@@ -1,8 +1,9 @@
 # from django.forms import ModelForm
 from django import forms
-from .models import TblUsuario
+from .models import TblUsuario, TblProducto
 from django.contrib.auth.hashers import make_password
 from datetime import date, timedelta
+
 
 class LoginForm(forms.Form):
     usuario  = forms.CharField(max_length=45, required=True)
@@ -91,3 +92,40 @@ class RegistroUsuarioForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+class ArticuloForm(forms.ModelForm):
+    imagen_archivo = forms.FileField(
+        required=False,  # El requerido lo manejamos manualmente en clean()
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*'
+        })
+    )
+
+    class Meta:
+        model = TblProducto
+        fields = ['prod_nombre', 'prod_marca', 'prod_modelo', 'prod_motor', 'prod_categoria', 'prod_descripcion']
+        widgets = {
+            'prod_nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_marca': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_modelo': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_motor': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_categoria': forms.TextInput(attrs={'class': 'form-control'}),
+            'prod_descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        # Aquí se determina si el producto ya tiene imagen, para luego decidir si la imagen es obligatoria
+        self.tiene_imagen = kwargs.pop('tiene_imagen', False)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        imagen = self.files.get('imagen_archivo')
+
+        # Si no tiene imagen previa y no se sube una nueva, lanzar error
+        if not self.tiene_imagen and not imagen:
+            self.add_error('imagen_archivo', 'Debes subir una imagen.')
+
+        return cleaned_data

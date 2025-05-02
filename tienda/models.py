@@ -260,13 +260,14 @@ class TblProducto(models.Model):
     prod_id = models.AutoField(primary_key=True)
     prod_nombre = models.CharField(max_length=25)
     prod_modelo = models.CharField(max_length=45)
-    prod_motor = models.IntegerField()
+    prod_motor = models.CharField(max_length=10)
     prod_categoria = models.CharField(max_length=45)
     prod_marca = models.CharField(max_length=45)
     prod_aniofabricacion = models.TextField(blank=True, null=True)  # This field type is a guess.
-    prod_descripcion = models.CharField(max_length=45, blank=True, null=True)
+    prod_descripcion = models.CharField(max_length=255, blank=True, null=True)
     prod_fecha_registro = models.DateTimeField()
     prod_porcenta_dcto = models.DecimalField(max_digits=2, decimal_places=2)
+    prod_estado = models.BooleanField(default=True)
     prod_imagen = models.CharField(max_length=255)
 
     class Meta:
