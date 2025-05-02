@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
-from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm
-from .models import TblUsuario, TblProducto
+from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm
+from .models import TblUsuario, TblProducto, TblProveedor
 from django.contrib import messages
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -202,10 +202,29 @@ def cambiar_estado_articulo(request, producto_id):
     return JsonResponse({"message": f'Artículo "{producto.prod_nombre}" ha sido {estado} correctamente.'})
 
 def lista_proveedores(request):
-    return render(request, 'tienda/lista_proveedores.html')
+    proveedor = TblProveedor.objects.all()
+    return render(request, 'tienda/lista_proveedores.html', {'proveedor': proveedor})
 
 def agregar_proveedor(request):
-    return render(request, 'tienda/agregar_proveedor.html')
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                proveedor = form.save(commit=False)
+                proveedor.save()
+                return redirect('lista_proveedores')
+            except Exception as e:
+                print(f'Error al guardar el proveedor: {e}')  # Esto mostrará el error exacto
+        else:
+            print('Formulario inválido:', form.errors)
+    else:
+        form = ProveedorForm()
+
+    return render(request, 'tienda/agregar_proveedor.html', {'form': form})
+
+def detalle_proveedor(request, proveedor_id):
+    proveedor = get_object_or_404(TblProveedor, pk=proveedor_id)
+    return render(request, 'tienda/detalle_proveedor.html', {'detalle_proveedor': proveedor})
 
 def lista_ingresos(request):
     return render(request, 'tienda/lista_ingresos.html')

@@ -1,6 +1,6 @@
 # from django.forms import ModelForm
 from django import forms
-from .models import TblUsuario, TblProducto
+from .models import TblUsuario, TblProducto, TblProveedor
 from django.contrib.auth.hashers import make_password
 from datetime import date, timedelta
 
@@ -129,3 +129,16 @@ class ArticuloForm(forms.ModelForm):
             self.add_error('imagen_archivo', 'Debes subir una imagen.')
 
         return cleaned_data
+
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = TblProveedor
+        fields = ['proveedor_nombre', 'proveedor_ruc', 'proveedor_telefono', 'proveedor_direccion', 'proveedor_email']
+        widgets = {
+            'proveedor_nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'proveedor_ruc': forms.TextInput(attrs={'class': 'form-control'}),
+            'proveedor_telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'proveedor_direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'proveedor_email': forms.TextInput(attrs={'class': 'form-control'}),
+        }

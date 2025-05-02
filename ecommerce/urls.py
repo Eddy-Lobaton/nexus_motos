@@ -41,4 +41,6 @@ urlpatterns = [
     path('agregar_cliente/',views.agregar_cliente, name= 'agregar_cliente'),
     path('lista_ventas/',views.lista_ventas, name= 'lista_ventas'),
     path('agregar_venta/',views.agregar_venta, name= 'agregar_venta'),
+    path('proveedor/<int:proveedor_id>/', views.detalle_proveedor, name='detalle_proveedor'),
+
 ]
