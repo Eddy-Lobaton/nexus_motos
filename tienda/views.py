@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
 from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm
-from .models import TblUsuario, TblProducto, TblProveedor
+from .models import TblUsuario, TblProducto, TblProveedor, TblCliente
 from django.contrib import messages
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -230,7 +230,8 @@ def lista_ingresos(request):
     return render(request, 'tienda/lista_ingresos.html')
 
 def agregar_ingresos(request):
-    return render(request, 'tienda/agregar_ingresos.html')
+    clientes = TblCliente.objects.all()
+    return render(request, 'tienda/agregar_ingresos.html', {'clientes': clientes}))
 
 def lista_clientes(request):
     return render(request, 'tienda/lista_clientes.html')
