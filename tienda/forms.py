@@ -1,6 +1,6 @@
 # from django.forms import ModelForm
 from django import forms
-from .models import TblUsuario, TblProducto, TblProveedor
+from .models import TblUsuario, TblProducto, TblProveedor,TblCliente
 from django.contrib.auth.hashers import make_password
 from datetime import date, timedelta
 
@@ -141,4 +141,21 @@ class ProveedorForm(forms.ModelForm):
             'proveedor_telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'proveedor_direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'proveedor_email': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = TblCliente
+        fields = ['cliente_nrodocumento', 'cliente_tipodocumento', 'cliente_nombre', 'cliente_paterno', 'cliente_materno', 'cliente_fechanac', 'cliente_telefono', 'cliente_email', 'cliente_sexo', 'cliente_direccion']
+        widgets = {
+            'cliente_nrodocumento': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_tipodocumento': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_paterno': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_materno': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_fechanac': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_email': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_sexo': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_direccion': forms.TextInput(attrs={'class': 'form-control'}),
         }

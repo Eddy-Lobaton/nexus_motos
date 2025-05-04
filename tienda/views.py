@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
-from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm
+from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm, ClienteForm
 from .models import TblUsuario, TblProducto, TblProveedor, TblCliente
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -230,14 +230,32 @@ def lista_ingresos(request):
     return render(request, 'tienda/lista_ingresos.html')
 
 def agregar_ingresos(request):
-    clientes = TblCliente.objects.all()
-    return render(request, 'tienda/agregar_ingresos.html', {'clientes': clientes}))
+    return render(request, 'tienda/agregar_ingresos.html')
 
 def lista_clientes(request):
-    return render(request, 'tienda/lista_clientes.html')
+    clientes = TblCliente.objects.all()
+    return render(request, 'tienda/lista_clientes.html', {'clientes': clientes})
+
+def detalle_cliente(request, cliente_id):
+    cliente = get_object_or_404(TblCliente, pk=cliente_id)
+    return render(request, 'tienda/detalle_cliente.html', {'cliente': cliente})
 
 def agregar_cliente(request):
-    return render(request, 'tienda/agregar_cliente.html')
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                cliente = form.save(commit=False)
+                cliente.save()
+                return redirect('lista_clientes')
+            except Exception as e:
+                print(f'Error al guardar el cliente: {e}')  # Esto mostrará el error exacto
+        else:
+            print('Formulario inválido:', form.errors)
+    else:
+        form = ClienteForm()
+
+    return render(request, 'tienda/agregar_cliente.html', {'form': form})
 
 def lista_ventas(request):
     return render(request, 'tienda/lista_ventas.html')

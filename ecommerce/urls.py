@@ -35,12 +35,12 @@ urlpatterns = [
     path('cambiar_estado_articulo/<int:producto_id>/', views.cambiar_estado_articulo, name='cambiar_estado_articulo'),
     path('lista_proveedores/',views.lista_proveedores, name= 'lista_proveedores'),
     path('agregar_proveedor/',views.agregar_proveedor, name= 'agregar_proveedor'),
+    path('proveedor/<int:proveedor_id>/', views.detalle_proveedor, name='detalle_proveedor'),
     path('lista_ingresos/',views.lista_ingresos, name= 'lista_ingresos'),
     path('agregar_ingresos/',views.agregar_ingresos, name= 'agregar_ingresos'),
     path('lista_clientes/',views.lista_clientes, name= 'lista_clientes'),
     path('agregar_cliente/',views.agregar_cliente, name= 'agregar_cliente'),
+    path('cliente/<int:cliente_id>/', views.detalle_cliente, name='detalle_cliente'),
     path('lista_ventas/',views.lista_ventas, name= 'lista_ventas'),
     path('agregar_venta/',views.agregar_venta, name= 'agregar_venta'),
-    path('proveedor/<int:proveedor_id>/', views.detalle_proveedor, name='detalle_proveedor'),
-
 ]

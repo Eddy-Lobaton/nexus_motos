@@ -20,7 +20,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title mb-0">Lista de clientes</h5>
                 <div>
-                    <a href="{% url 'agregar_articulos' %}" class="btn btn-primary me-2">
+                    <a href="{% url 'agregar_cliente' %}" class="btn btn-primary me-2">
                         <i class="bi bi-plus-circle"></i> Agregar
                     </a>
                     <a href="#" class="btn btn-success">
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <hr size="3px" color="black">
-            <table id="productos-table" class="table table-bordered table-hover text-center" style="width:100%">
+            <table id="cliente-table" class="table table-bordered table-hover text-center" style="width:100%">
                 <thead class="table table-striped responsive nowrap">
                     <tr>
                         <th>Tipo documento</th>
@@ -44,33 +44,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for producto in productos %}
+                    {% for clientes in clientes %}
                     <tr>
-                        <td>{{ producto.prod_nombre }}</td>
-                        <td>{{ producto.prod_marca }}</td>
-                        <td>{{ producto.prod_modelo }}</td>
-                        <td>{{ producto.prod_motor }}</td>
-                        <td>{{ producto.prod_categoria }}</td>
-                        <td>{{ producto.prod_fecha_registro|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ clientes.cliente_nrodocumento }}</td>
+                        <td>{{ clientes.cliente_tipodocumento }}</td>
+                        <td>{{ clientes.cliente_nombre }}</td>
+                        <td>{{ clientes.cliente_paterno }}</td>
+                        <td>{{ clientes.cliente_materno }}</td>
+                        <td>{{ clientes.cliente_telefono }}</td>
+                        <td>{{ clientes.cliente_email }}</td>
+                        <td>{{ clientes.cliente_direccion }}</td>
                         <td>
-                            <label class="switch">
-                                <input type="checkbox"
-                                    class="toggle-estado"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#confirmarCambioEstadoModal"
-                                    data-producto-id="{{ producto.prod_id }}"
-                                    data-producto-nombre="{{ producto.prod_nombre }}"
-                                    data-producto-estado="{{ producto.prod_estado }}"
-                                    {% if producto.prod_estado %}checked{% endif %}>
-                                <span class="slider">
-                                    <span class="text-on">ON</span>
-                                    <span class="text-off">OFF</span>
-                                </span>
-                            </label>
-                        </td>
-                        <td>
-                            <a href="{% url 'detalle_articulo' producto.prod_id %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
-                            <a href="{% url 'editar_articulo' producto.prod_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <a href="{% url 'detalle_cliente' clientes.cliente_id %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'detalle_cliente' clientes.cliente_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -94,5 +80,5 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{% static 'tienda/js/lista_articulos.js' %}"></script>
+<script src="{% static 'tienda/js/lista_cliente.js' %}"></script>
 {% endblock %}
