@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
 from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm, ClienteForm
-from .models import TblUsuario, TblProducto, TblProveedor, TblCliente
+from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta, TblEntrada
 from django.contrib import messages
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -227,9 +227,11 @@ def detalle_proveedor(request, proveedor_id):
     return render(request, 'tienda/detalle_proveedor.html', {'detalle_proveedor': proveedor})
 
 def lista_ingresos(request):
-    return render(request, 'tienda/lista_ingresos.html')
+    ingresos = TblEntrada.objects.all()
+    return render(request, 'tienda/lista_ingresos.html', {'ingresos': ingresos})
 
 def agregar_ingresos(request):
+    ingresos = TblEntrada.objects.all()
     return render(request, 'tienda/agregar_ingresos.html')
 
 def lista_clientes(request):
@@ -258,8 +260,12 @@ def agregar_cliente(request):
     return render(request, 'tienda/agregar_cliente.html', {'form': form})
 
 def lista_ventas(request):
-    return render(request, 'tienda/lista_ventas.html')
+    ventas = TblVenta.objects.all()
+    return render(request, 'tienda/lista_ventas.html', {'ventas': ventas})
 
 def agregar_venta(request):
     return render(request, 'tienda/agregar_venta.html')
 
+def detalle_venta(request, venta_id):
+    venta = get_object_or_404(TblVenta, pk=venta_id)
+    return render(request, 'tienda/detalle_venta.html', {'venta': venta})
