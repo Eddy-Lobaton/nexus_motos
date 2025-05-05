@@ -269,3 +269,28 @@ def agregar_venta(request):
 def detalle_venta(request, venta_id):
     venta = get_object_or_404(TblVenta, pk=venta_id)
     return render(request, 'tienda/detalle_venta.html', {'venta': venta})
+
+def lista_usuarios(request):
+    usuarios  = TblUsuario.objects.all()
+    return render(request, 'tienda/lista_usuarios.html', {'usuarios': usuarios})
+
+def agregar_usuario(request):
+    if request.method == 'POST':
+        form = RegistroUsuarioForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                usuario = form.save(commit=False)
+                usuario.save()
+                return redirect('lista_usuarios')
+            except Exception as e:
+                print(f'Error al guardar el usuario: {e}')  # Esto mostrará el error exacto
+        else:
+            print('Formulario inválido:', form.errors)
+    else:
+        form = RegistroUsuarioForm()
+
+    return render(request, 'tienda/agregar_usuario.html', {'form': form})
+
+def detalle_usuario(request, usuario_id):
+    usuario = get_object_or_404(TblUsuario, pk=usuario_id)
+    return render(request, 'tienda/detalle_usuario.html', {'usuario': usuario})
