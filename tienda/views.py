@@ -8,6 +8,8 @@ from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta,
 from django.contrib import messages
 from django.core.paginator import Paginator
 from datetime import datetime
+from django.utils import timezone
+from datetime import timedelta
 
 import requests
 from django.http import JsonResponse
@@ -233,6 +235,7 @@ def lista_ingresos(request):
 def agregar_ingresos(request):
     ingresos = TblEntrada.objects.all()
     return render(request, 'tienda/agregar_ingresos.html')
+
 
 def lista_clientes(request):
     clientes = TblCliente.objects.all()
