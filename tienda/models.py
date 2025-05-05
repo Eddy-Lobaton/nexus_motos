@@ -175,7 +175,7 @@ class TblDetFinanciamiento(models.Model):
 class TblDetSalida(models.Model):
     det_salida_id = models.IntegerField(primary_key=True)
     det_salida_cantidad = models.IntegerField(blank=True, null=True)
-    det_salida_precio_costo = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    det_salida_precio_salida = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     det_salida_sub_total = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     prod = models.ForeignKey('TblProducto', models.DO_NOTHING)
     salida = models.ForeignKey('TblSalida', models.DO_NOTHING)
@@ -189,7 +189,7 @@ class TblDetVenta(models.Model):
     det_venta_id = models.AutoField(primary_key=True)
     det_venta_cantidad = models.IntegerField()
     det_venta_precio_unitario = models.DecimalField(max_digits=8, decimal_places=2)
-    det_venta_subtotal = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    det_venta_subtotal = models.DecimalField(max_digits=8, decimal_places=2)
     det_venta_dcto = models.DecimalField(max_digits=8, decimal_places=2)
     det_venta_total = models.DecimalField(max_digits=8, decimal_places=2)
     prod = models.ForeignKey('TblProducto', models.DO_NOTHING)
@@ -203,10 +203,13 @@ class TblDetVenta(models.Model):
 class TblEntrada(models.Model):
     entrada_id = models.AutoField(primary_key=True)
     entrada_fecha = models.DateTimeField()
+    entrada_subtotal = models.DecimalField(max_digits=8, decimal_places=2)
+    entrada_igv = models.DecimalField(max_digits=8, decimal_places=2)
     entrada_costo_total = models.DecimalField(max_digits=8, decimal_places=2)
     entrada_num_doc = models.IntegerField()
     proveedor = models.ForeignKey('TblProveedor', models.DO_NOTHING)
     tipo_doc_almacen = models.ForeignKey('TblTipoDocAlmacen', models.DO_NOTHING)
+    usuario = models.ForeignKey('TblUsuario', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -292,10 +295,14 @@ class TblProveedor(models.Model):
 class TblSalida(models.Model):
     salida_id = models.IntegerField(primary_key=True)
     salida_fecha = models.DateField()
+    salida_subtotal = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    salida_igv = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     salida_costo_total = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     salida_num_doc = models.IntegerField(blank=True, null=True)
-    salida_motivo = models.CharField(max_length=45, blank=True, null=True)
+    salida_motivo = models.CharField(max_length=200, blank=True, null=True)
+    salida_eliminado = models.BooleanField(default=False)
     tipo_doc_almacen = models.ForeignKey('TblTipoDocAlmacen', models.DO_NOTHING)
+    usuario = models.ForeignKey('TblUsuario', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -305,6 +312,7 @@ class TblSalida(models.Model):
 class TblTipoDocAlmacen(models.Model):
     tipo_doc_almacen_id = models.IntegerField(primary_key=True)
     tipo_doc_almacen_descripcion = models.CharField(max_length=45)
+    tipo_doc_almacen_tipo = models.CharField(max_length=45)
 
     class Meta:
         managed = False
@@ -364,6 +372,8 @@ class TblVenta(models.Model):
     venta_subtotal = models.DecimalField(max_digits=8, decimal_places=2)
     venta_igv = models.DecimalField(max_digits=8, decimal_places=2)
     venta_total = models.DecimalField(max_digits=8, decimal_places=2)
+    venta_nro_documento = models.CharField(max_length=45)
+    venta_eliminado = models.BooleanField(default=False)
     cliente = models.ForeignKey(TblCliente, models.DO_NOTHING)
     usuario = models.ForeignKey(TblUsuario, models.DO_NOTHING)
     metodo_pago = models.ForeignKey(TblMetodoPago, models.DO_NOTHING)
