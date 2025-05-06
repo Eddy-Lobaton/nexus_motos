@@ -4,10 +4,16 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
 from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm, ClienteForm
-from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta, TblEntrada
+from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta, TblEntrada,TblTipoDocAlmacen, TblDetEntrada
 from django.contrib import messages
 from django.core.paginator import Paginator
 from datetime import datetime
+from django.utils import timezone
+from datetime import date, timedelta
+from django.db.models import Max
+from django.db import transaction
+import json
+
 
 import requests
 from django.http import JsonResponse
@@ -227,12 +233,116 @@ def detalle_proveedor(request, proveedor_id):
     return render(request, 'tienda/detalle_proveedor.html', {'detalle_proveedor': proveedor})
 
 def lista_ingresos(request):
-    ingresos = TblEntrada.objects.all()
+    ingresos = TblEntrada.objects.select_related(
+        'proveedor', 'tipo_doc_almacen', 'usuario'
+    ).all()
     return render(request, 'tienda/lista_ingresos.html', {'ingresos': ingresos})
 
+@transaction.atomic
 def agregar_ingresos(request):
-    ingresos = TblEntrada.objects.all()
-    return render(request, 'tienda/agregar_ingresos.html')
+
+    if request.method == "POST":
+        try:
+            proveedor_id = request.POST.get("proveedor_id")
+            tipo_doc_id = request.POST.get("tipo_doc_almacen_id")
+            entrada_num_doc = request.POST.get("entrada_num_doc")
+            entrada_fecha = request.POST.get("entrada_fecha")
+            entrada_igv = float(request.POST.get("entrada_igv", 0))
+            entrada_subtotal = float(request.POST.get("subtotal_entrada") or 0)
+            entrada_total = float(request.POST.get("total_entrada") or 0)
+
+            articulos_json = request.POST.get("articulos")  # Este será un JSON con los productos
+            articulos = json.loads(articulos_json)
+
+            if not articulos:
+                messages.error(request, "Debe agregar al menos un producto.")
+                return redirect("agregar_ingresos")
+
+            for art in articulos:
+                if art["cantidad"] <= 0 or art["precio"] <= 0:
+                    messages.error(request, "Cantidad y precio deben ser mayores a cero.")
+                    return redirect("agregar_ingresos")
+
+            # Guardar entrada
+            entrada = TblEntrada.objects.create(
+                entrada_fecha=timezone.now(),  #entrada_fecha,
+                entrada_num_doc=entrada_num_doc,
+                entrada_subtotal=entrada_subtotal,
+                entrada_igv=entrada_igv,
+                entrada_costo_total=entrada_total,
+                proveedor_id=proveedor_id,
+                tipo_doc_almacen_id=tipo_doc_id,
+                usuario_id=request.user.id
+            )
+
+            # Guardar detalle por producto
+            for art in articulos:
+                TblDetEntrada.objects.create(
+                    entrada=entrada,
+                    prod_id=art["id"],
+                    det_entrada_cantidad=art["cantidad"],
+                    det_entrada_precio_costo=art["precio"],
+                    det_entrada_sub_total=art["subtotal"]
+                )
+
+            messages.success(request, "Entrada registrada correctamente.")
+            return redirect("lista_ingresos")  # Puedes cambiar a la vista de listado
+
+        except Exception as e:
+            transaction.set_rollback(True)
+            messages.error(request, f"Ocurrió un error: {str(e)}")
+            return redirect("agregar_ingresos")
+
+    proveedores = TblProveedor.objects.all()
+    tipos_doc = TblTipoDocAlmacen.objects.filter(tipo_doc_almacen_tipo__in=['ES', 'E', 'EI'])
+    productos = TblProducto.objects.all()
+
+    tipo_seleccionado_id = request.GET.get('tipo_doc_id')
+
+    if tipo_seleccionado_id:
+        tipo_doc = TblTipoDocAlmacen.objects.get(pk=tipo_seleccionado_id)
+        tipo_codigo = tipo_doc.tipo_doc_almacen_tipo  # ES, E o EI
+
+        # Lógica de agrupamiento para prefijos y filtrado
+        if tipo_codigo in ['ES', 'E']:
+            tipo_cod_prefijo = 'E'
+            tipos_a_contar = ['ES', 'E']
+        elif tipo_codigo == 'EI':
+            tipo_cod_prefijo = 'EI'
+            tipos_a_contar = ['EI']
+        else:
+            return JsonResponse({'numero': ''})  # En caso de un tipo inesperado
+
+        # Obtener los tipos que tienen ese tipo_cod_prefijo
+        entradas = TblEntrada.objects.filter(
+            tipo_doc_almacen__tipo_doc_almacen_tipo__in=tipos_a_contar
+        )
+
+        # Extraer el correlativo mayor
+        max_num = 0
+        for entrada in entradas:
+            try:
+                num = int(entrada.entrada_num_doc.split("-")[1])
+                max_num = max(max_num, num)
+            except:
+                continue
+
+        nuevo_num = max_num + 1
+        numero_generado = f"{tipo_cod_prefijo}-{nuevo_num:05d}"
+
+        return JsonResponse({'numero': numero_generado})
+
+
+    #hoy = date.today()
+    #hace_dos_dias = hoy - timedelta(days=2)
+
+    return render(request, 'tienda/agregar_ingresos.html', {
+        'proveedores': proveedores,
+        'tipos_doc': tipos_doc,
+        'productos': productos,
+        #'fecha_hoy': hoy.strftime('%Y-%m-%d'),
+        #'fecha_min': hace_dos_dias.strftime('%Y-%m-%d'),
+    })
 
 def lista_clientes(request):
     clientes = TblCliente.objects.all()

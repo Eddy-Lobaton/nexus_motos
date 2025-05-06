@@ -1,17 +1,13 @@
-.container {
-    background-color: #e0e0e0;
-    padding: 20px;
-    border-radius: 8px;
-}
-.barcode-preview img {
-    width: 100px;
+.card {
+  padding: 20px;
+  margin-top: 20px;
 }
 
-.btn-agregar {
-  background-color: #6cd6ff;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  margin: 1rem 0;
-  cursor: pointer;
-  border-radius: 4px;
+.modal-dialog-altura {
+  height: 80vh;
+}
+
+#tablaProductosDT {
+  width: 100% !important;
+  table-layout: fixed;
 }

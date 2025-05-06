@@ -17,6 +17,14 @@
 
     <div class="card">
         <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title mb-0">Lista de ingresos</h5>
                 <div>
@@ -32,29 +40,31 @@
             <table id="ingresos-table" class="table table-bordered table-hover text-center" style="width:100%">
                 <thead class="table table-striped responsive nowrap">
                     <tr>
-                        <th>Fecha</th>
                         <th>Proveedor</th>
+                        <th>Tipo Documento</th>
+                        <th>N° Documento</th>
                         <th>Subtotal</th>
-                        <th>Igv</th>
+                        <th>IGV</th>
                         <th>Total</th>
-                        <th>Usuario </th>
-                        <th>Tipo documento</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for ingresos in ingresos %}
+                    {% for ingreso in ingresos %}
                     <tr>
-                        <td>{{ ingresos.entrada_fecha }}</td>
-                        <td>{{ ingresos.proveedor_id }}</td>
-                        <td>{{ ingresos.entrada_subtotal }}</td>
-                        <td>{{ ingresos.entrada_igv }}</td>
-                        <td>{{ ingresos.entrada_costo_total }}</td>
-                        <td>{{ ingresos.usuario_id }}</td>
-                        <td>{{ ingresos.tipo_doc_almacen_id }}</td>
+                        <td>{{ ingreso.proveedor.proveedor_nombre }}</td>
+                        <td>{{ ingreso.tipo_doc_almacen.tipo_doc_almacen_descripcion }}</td>
+                        <td>{{ ingreso.entrada_num_doc }}</td>
+                        <td>{{ ingreso.entrada_subtotal }}</td>
+                        <td>{{ ingreso.entrada_igv }}</td>
+                        <td>{{ ingreso.entrada_costo_total }}</td>
+                        <td>{{ ingreso.usuario.usuario_nombre }} {{ ingreso.usuario.usuario_paterno }} {{ ingreso.usuario.usuario_materno }}</td>
+                        <td>{{ ingreso.entrada_fecha|date:"d/m/Y H:i:s" }}</td>
                         <td>
-                            <a href="{% url 'detalle_venta' ventas.venta_id %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
-                            <a href="{% url 'detalle_venta' ventas.venta_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
+                            <a href="#" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
