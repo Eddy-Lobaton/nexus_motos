@@ -14,22 +14,42 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('#id_usuario_direccion').value = '';
     };
 
+    const restringirDni = function () {
+        this.value = this.value.replace(/\D/g, "").slice(0, 8);
+    };
+
+    tipoDocInput.addEventListener('change', function () {
+        const tipoDoc = tipoDocInput.value;
+        limpiarCampos();
+        if (tipoDoc === "DNI") {
+            dniInput.value = "";
+            dniInput.setAttribute("maxlength", "8");
+            dniInput.addEventListener("input", restringirDni);
+            feedbackDivDni.textContent = "El DNI debe contener 8 dígitos numéricos.";
+            feedbackDivDni.classList.remove('text-danger');
+            feedbackDivDni.classList.add('text-primary');
+        } else if (tipoDoc === "CE") {
+            dniInput.setAttribute("maxlength", "12");
+            dniInput.removeEventListener("input", restringirDni);
+            feedbackDivDni.textContent = "El carnet de extranjería debe contener 12 dígitos numéricos.";
+            feedbackDivDni.classList.remove('text-danger');
+            feedbackDivDni.classList.add('text-primary');
+        } else {
+            dniInput.removeAttribute("maxlength");
+            dniInput.removeEventListener("input", restringirDni);
+        }
+    });
+
     dniInput.addEventListener('blur', function () {
         const dni = dniInput.value.trim();
-        const tipoDoc = tipoDocInput.value;
-        if (tipoDoc === "DNI") {
-            // Validar que tenga exactamente 8 dígitos numéricos
-            const dniRegex = /^\d{8}$/; 
-            if (!dniRegex.test(dni)) {
-                limpiarCampos();
-                feedbackDivDni.textContent = "El DNI debe contener exactamente 8 dígitos numéricos.";
-                dniInput.classList.add('is-invalid');
-                return;
-            }
-            
+        const tipoDoc = tipoDocInput.value.trim();
+        const dniRegex = /^\d{8}$/; // 8 dígitos numéricos
+    
+        // Verifica si el tipo es DNI y el valor cumple con el formato
+        if (tipoDoc === "DNI" && dniRegex.test(dni)) {
             // Mostrar el overlay antes de la consulta
             document.getElementById('loadingOverlay').style.display = 'flex';
-
+    
             fetch(`/registrar/api/consultar-dni/?dni=${dni}`)
                 .then(response => response.json())
                 .then(data => {
@@ -56,7 +76,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Ocultar el overlay después del fetch
                     document.getElementById('loadingOverlay').style.display = 'none';
                 });
+    
+        } else if (tipoDoc === "DNI" && !dniRegex.test(dni)) {
+            if (dni.length > 0 && dni.length < 8) {
+                limpiarCampos();
+                feedbackDivDni.textContent = "El DNI debe tener exactamente 8 dígitos. Ingresó menos.";
+            } else {
+                limpiarCampos();
+                feedbackDivDni.textContent = "El DNI debe contener exactamente 8 dígitos numéricos.";
+            }
+            feedbackDivDni.classList.remove('text-danger');
+            dniInput.classList.add('is-invalid');
+        } else {
+            // Otro tipo de documento (no es DNI)
+            feedbackDivDni.textContent = "Seleccione un tipo de documento válido.";
+            feedbackDivDni.classList.remove('text-danger');
+            dniInput.classList.add('is-invalid');
         }
+
     });
 
     //**** al realizar cambio en el tipo de documento limpiar imput
