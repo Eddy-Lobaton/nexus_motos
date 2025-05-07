@@ -49,51 +49,66 @@ document.addEventListener('DOMContentLoaded', function () {
         if (tipoDoc === "DNI" && dniRegex.test(dni)) {
             // Mostrar el overlay antes de la consulta
             document.getElementById('loadingOverlay').style.display = 'flex';
-    
-            fetch(`/registrar/api/consultar-dni/?dni=${dni}`)
+            
+            fetch(`/registrar/verificar-datos-bd/?numDoc=${dni}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        feedbackDivDni.textContent = "";
-                        dniInput.classList.remove('is-invalid');
-                        document.querySelector('#id_usuario_nombre').value = data.nombres || '';
-                        document.querySelector('#id_usuario_paterno').value = data.apellido_paterno || '';
-                        document.querySelector('#id_usuario_materno').value = data.apellido_materno || '';
-                        document.querySelector('#id_usuario_direccion').value = data.direccion || '';
-                    } else {
+                    if (data.existsDoc) {
                         limpiarCampos();
-                        feedbackDivDni.textContent = data.error || "DNI no encontrado.";
+                        feedbackDivDni.textContent = "Este DNI ya está registrado en el sistema.";
                         dniInput.classList.add('is-invalid');
+                        feedbackDivDni.classList.add('text-danger');
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                    } else {
+
+                        // Paso 2: Consultar al API externo
+                        fetch(`/registrar/api/consultar-dni/?dni=${dni}`)
+                            .then(response => response.json())
+                            .then(data => {
+
+                                if (data.success) {
+                                    feedbackDivDni.textContent = "";
+                                    dniInput.classList.remove('is-invalid');
+                                    document.querySelector('#id_usuario_nombre').value = data.nombres || '';
+                                    document.querySelector('#id_usuario_paterno').value = data.apellido_paterno || '';
+                                    document.querySelector('#id_usuario_materno').value = data.apellido_materno || '';
+                                    document.querySelector('#id_usuario_direccion').value = data.direccion || '';
+                                } else {
+                                    limpiarCampos();
+                                    feedbackDivDni.textContent = data.error || "DNI no encontrado.";
+                                    dniInput.classList.add('is-invalid');
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error en la consulta:", error);
+                                limpiarCampos();
+                                feedbackDivDni.textContent = "Ocurrió un error al consultar el DNI.";
+                                dniInput.classList.add('is-invalid');
+                                })
+                            .finally(() => {
+                                 document.getElementById('loadingOverlay').style.display = 'none';
+                            });
                     }
                 })
                 .catch(error => {
-                    console.error("Error en la consulta:", error);
-                    limpiarCampos();
-                    feedbackDivDni.textContent = "Ocurrió un error al consultar el DNI.";
+                    console.error("Error al validar el DNI en BD:", error);
+                    feedbackDivDni.textContent = "Error al verificar si el DNI ya existe.";
                     dniInput.classList.add('is-invalid');
-                })
-                .finally(() => {
-                    // Ocultar el overlay después del fetch
                     document.getElementById('loadingOverlay').style.display = 'none';
                 });
-    
+
         } else if (tipoDoc === "DNI" && !dniRegex.test(dni)) {
             if (dni.length > 0 && dni.length < 8) {
                 limpiarCampos();
                 feedbackDivDni.textContent = "El DNI debe tener exactamente 8 dígitos. Ingresó menos.";
+                feedbackDivDni.classList.remove('text-danger');
+                dniInput.classList.add('is-invalid');
+                feedbackDivDni.classList.add('text-danger', 'small');
             } else {
                 limpiarCampos();
                 feedbackDivDni.textContent = "El DNI debe contener exactamente 8 dígitos numéricos.";
             }
-            feedbackDivDni.classList.remove('text-danger');
-            dniInput.classList.add('is-invalid');
-        } else {
-            // Otro tipo de documento (no es DNI)
-            feedbackDivDni.textContent = "Seleccione un tipo de documento válido.";
-            feedbackDivDni.classList.remove('text-danger');
-            dniInput.classList.add('is-invalid');
-        }
-
+        } 
     });
 
     //**** al realizar cambio en el tipo de documento limpiar imput
@@ -134,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //**** Validar email
     const emailInput = document.querySelector('#id_usuario_email');
     const feedbackDivEmail = document.createElement('div');
-    feedbackDivEmail.classList.add('text-danger', 'small');
+    
     emailInput.parentNode.appendChild(feedbackDivEmail);
 
     emailInput.addEventListener('blur', function () {
@@ -142,12 +157,34 @@ document.addEventListener('DOMContentLoaded', function () {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             feedbackDivEmail.textContent = "Ingrese un email correcto.";
+            feedbackDivEmail.classList.add('text-danger', 'small');
             emailInput.classList.add('is-invalid');
             return;
-        }else{
-            feedbackDivEmail.textContent = "";
-            emailInput.classList.remove('is-invalid');
         }
+        document.getElementById('loadingOverlay').style.display = 'flex';
+
+
+        fetch(`/registrar/verificar-datos-bd/?email=${email}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.existsEmail) {
+                    feedbackDivEmail.textContent = "Email ya ha sido registrado.";
+                    emailInput.classList.add('is-invalid');
+                    feedbackDivEmail.classList.add('text-danger');
+                } else {
+                    feedbackDivEmail.textContent = "";
+                    emailInput.classList.remove('is-invalid');
+                    feedbackDivEmail.classList.remove('text-danger');
+                }
+            })
+            .catch(error => {
+                console.error("Error al verificar email:", error);
+                feedbackDivEmail.textContent = "Ocurrió un error al verificar el email.";
+                emailInput.classList.add('is-invalid');
+            })
+            .finally(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            });
     });
 
     //**** Validar username
