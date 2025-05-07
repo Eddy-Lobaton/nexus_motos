@@ -11,6 +11,7 @@ from datetime import datetime
 from django.utils import timezone
 from datetime import date, timedelta
 from django.db.models import Max
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 import json
 
@@ -60,6 +61,7 @@ def login_view(request):
 
 
 @require_GET
+@login_required
 def consultar_dni(request):
     dni = request.GET.get('dni')
     if not dni:
@@ -87,11 +89,14 @@ def consultar_dni(request):
 
 
 @require_GET
+@login_required
 def verificar_username(request):
     username = request.GET.get('username', '')
     existe = User.objects.filter(username=username).exists()
     return JsonResponse({'existe': existe})
 
+
+@login_required
 def verificar_datos(request):
     numDoc = request.GET.get('numDoc')
     email = request.GET.get('email')
@@ -101,6 +106,7 @@ def verificar_datos(request):
     return JsonResponse({'existsDoc': existeDoc, 'existsEmail': existeEmail})
 
 
+@login_required
 def registrar_usuario(request):
     if request.method == 'POST':
         form = RegistroUsuarioForm(request.POST)
@@ -115,10 +121,14 @@ def registrar_usuario(request):
         form = RegistroUsuarioForm()
     return render(request, 'tienda/registro.html', {'form': form})
 
+
+@login_required
 def signoup (request):
     logout(request) 
     return redirect('home')
 
+
+@login_required
 def lista_productos(request):
     productos = TblProducto.objects.all()
     paginator = Paginator(productos, 6)  # Mostrar 6 productos por página
@@ -126,10 +136,14 @@ def lista_productos(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'tienda/productos.html', {'page_obj': page_obj})
 
+
+@login_required
 def lista_articulos(request):
     productos = TblProducto.objects.all()
     return render(request, 'tienda/lista_articulos.html', {'productos': productos})
 
+
+@login_required
 def agregar_articulos(request):
     if request.method == 'POST':
         form = ArticuloForm(request.POST, request.FILES)
@@ -161,10 +175,14 @@ def agregar_articulos(request):
 
     return render(request, 'tienda/agregar_articulos.html', {'form': form})
 
+
+@login_required
 def detalle_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, pk=producto_id)
     return render(request, 'tienda/detalle_articulo.html', {'producto': producto})
 
+
+@login_required
 def editar_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, prod_id=producto_id)
 
@@ -199,6 +217,7 @@ def editar_articulo(request, producto_id):
     return render(request, 'tienda/editar_articulo.html', {'form': form, 'producto': producto})
 
 @require_POST
+@login_required
 def cambiar_estado_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, prod_id=producto_id)
     producto.prod_estado = not producto.prod_estado
@@ -207,10 +226,14 @@ def cambiar_estado_articulo(request, producto_id):
     estado = "activado" if producto.prod_estado else "desactivado"
     return JsonResponse({"message": f'Artículo "{producto.prod_nombre}" ha sido {estado} correctamente.'})
 
+
+@login_required
 def lista_proveedores(request):
     proveedor = TblProveedor.objects.all()
     return render(request, 'tienda/lista_proveedores.html', {'proveedor': proveedor})
 
+
+@login_required
 def agregar_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST, request.FILES)
@@ -228,19 +251,24 @@ def agregar_proveedor(request):
 
     return render(request, 'tienda/agregar_proveedor.html', {'form': form})
 
+
+@login_required
 def detalle_proveedor(request, proveedor_id):
     proveedor = get_object_or_404(TblProveedor, pk=proveedor_id)
     return render(request, 'tienda/detalle_proveedor.html', {'detalle_proveedor': proveedor})
 
+
+@login_required
 def lista_ingresos(request):
     ingresos = TblEntrada.objects.select_related(
         'proveedor', 'tipo_doc_almacen', 'usuario'
     ).all()
     return render(request, 'tienda/lista_ingresos.html', {'ingresos': ingresos})
 
-@transaction.atomic
-def agregar_ingresos(request):
 
+@transaction.atomic
+@login_required
+def agregar_ingresos(request):
     if request.method == "POST":
         try:
             proveedor_id = request.POST.get("proveedor_id")
@@ -344,14 +372,20 @@ def agregar_ingresos(request):
         #'fecha_min': hace_dos_dias.strftime('%Y-%m-%d'),
     })
 
+
+@login_required
 def lista_clientes(request):
     clientes = TblCliente.objects.all()
     return render(request, 'tienda/lista_clientes.html', {'clientes': clientes})
 
+
+@login_required
 def detalle_cliente(request, cliente_id):
     cliente = get_object_or_404(TblCliente, pk=cliente_id)
     return render(request, 'tienda/detalle_cliente.html', {'cliente': cliente})
 
+
+@login_required
 def agregar_cliente(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST, request.FILES)
@@ -369,21 +403,31 @@ def agregar_cliente(request):
 
     return render(request, 'tienda/agregar_cliente.html', {'form': form})
 
+
+@login_required
 def lista_ventas(request):
     ventas = TblVenta.objects.all()
     return render(request, 'tienda/lista_ventas.html', {'ventas': ventas})
 
+
+@login_required
 def agregar_venta(request):
     return render(request, 'tienda/agregar_venta.html')
 
+
+@login_required
 def detalle_venta(request, venta_id):
     venta = get_object_or_404(TblVenta, pk=venta_id)
     return render(request, 'tienda/detalle_venta.html', {'venta': venta})
 
+
+@login_required
 def lista_usuarios(request):
     usuarios  = TblUsuario.objects.all()
     return render(request, 'tienda/lista_usuarios.html', {'usuarios': usuarios})
 
+
+@login_required
 def agregar_usuario(request):
     if request.method == 'POST':
         form = RegistroUsuarioForm(request.POST, request.FILES)
@@ -401,6 +445,8 @@ def agregar_usuario(request):
 
     return render(request, 'tienda/agregar_usuario.html', {'form': form})
 
+
+@login_required
 def detalle_usuario(request, usuario_id):
     usuario = get_object_or_404(TblUsuario, pk=usuario_id)
     return render(request, 'tienda/detalle_usuario.html', {'usuario': usuario})
