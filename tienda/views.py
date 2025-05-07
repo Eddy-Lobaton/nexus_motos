@@ -59,7 +59,6 @@ def login_view(request):
 
     return render(request, 'tienda/login.html', {'form': form})
 
-
 @require_GET
 @login_required
 def consultar_dni(request):
@@ -86,6 +85,7 @@ def consultar_dni(request):
             return JsonResponse({'success': False, 'error': 'DNI no encontrado.'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
 
 
 @require_GET
