@@ -13,6 +13,7 @@ from datetime import date, timedelta
 from django.db.models import Max
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from decimal import Decimal
 import json
 
 
@@ -140,6 +141,13 @@ def lista_productos(request):
 @login_required
 def lista_articulos(request):
     productos = TblProducto.objects.all()
+    
+    for producto in productos:
+        if producto.prod_porcenta_dcto:
+            producto.descuento_porcentaje = int(Decimal(producto.prod_porcenta_dcto) * 100)
+        else:
+            producto.descuento_porcentaje = 0
+
     return render(request, 'tienda/lista_articulos.html', {'productos': productos})
 
 
@@ -179,7 +187,11 @@ def agregar_articulos(request):
 @login_required
 def detalle_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, pk=producto_id)
-    return render(request, 'tienda/detalle_articulo.html', {'producto': producto})
+    descuento_porcentaje = int(Decimal(producto.prod_porcenta_dcto) * 100)
+    return render(request, 'tienda/detalle_articulo.html', {
+        'producto': producto,
+        'descuento_porcentaje': descuento_porcentaje
+    })
 
 
 @login_required

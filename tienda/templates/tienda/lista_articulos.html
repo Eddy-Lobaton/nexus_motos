@@ -37,6 +37,7 @@
                         <th>Modelo</th>
                         <th>Motor</th>
                         <th>Categoría</th>
+                        <th>Descuento</th>
                         <th>Fecha Registro</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -50,6 +51,7 @@
                         <td>{{ producto.prod_modelo }}</td>
                         <td>{{ producto.prod_motor }}</td>
                         <td>{{ producto.prod_categoria }}</td>
+                        <td>{{ producto.descuento_porcentaje }}%</td>
                         <td>{{ producto.prod_fecha_registro|date:"Y-m-d H:i:s" }}</td>
                         <td>
                             <label class="switch">
