@@ -3,7 +3,7 @@ from django import forms
 from .models import TblUsuario, TblProducto, TblProveedor,TblCliente
 from django.contrib.auth.hashers import make_password
 from datetime import date, timedelta
-
+from decimal import Decimal, ROUND_DOWN
 
 class LoginForm(forms.Form):
     usuario  = forms.CharField(max_length=45, required=True)
@@ -103,9 +103,24 @@ class ArticuloForm(forms.ModelForm):
         })
     )
 
+    # Sobrescribimos el campo aquí para capturar el valor como entero (porcentaje)
+    prod_porcenta_dcto = forms.IntegerField(
+        required=False,
+        min_value=0,
+        max_value=99,
+        initial=0,  # Valor por defecto
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Descuento (%)',
+            'min': '0',
+            'max': '99'
+        }),
+        label="Descuento (%)"
+    )
+
     class Meta:
         model = TblProducto
-        fields = ['prod_nombre', 'prod_marca', 'prod_modelo', 'prod_motor', 'prod_categoria', 'prod_descripcion']
+        fields = ['prod_nombre', 'prod_marca', 'prod_modelo', 'prod_motor', 'prod_categoria', 'prod_descripcion', 'prod_porcenta_dcto']
         widgets = {
             'prod_nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'prod_marca': forms.TextInput(attrs={'class': 'form-control'}),
@@ -120,6 +135,24 @@ class ArticuloForm(forms.ModelForm):
         self.tiene_imagen = kwargs.pop('tiene_imagen', False)
         super().__init__(*args, **kwargs)
 
+        # Mostrar porcentaje como entero si ya hay valor en el modelo
+        if self.instance and self.instance.prod_porcenta_dcto is not None:
+            self.initial['prod_porcenta_dcto'] = int(self.instance.prod_porcenta_dcto * 100)
+
+    def clean_prod_porcenta_dcto(self):
+        valor = self.cleaned_data.get('prod_porcenta_dcto')
+        if valor is None:
+            return 0  # Valor por defecto si no se ingresa nada
+
+        if valor < 0 or valor > 99:
+            raise forms.ValidationError("Ingresa un número entre 0 y 99.")
+
+        resultado = (Decimal(valor) / Decimal(100)).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+        print("resultadooooooo")
+        print(resultado)
+        # Convertir a decimal (por ejemplo: 10 -> 0.10)
+        return resultado
+    
     def clean(self):
         cleaned_data = super().clean()
         imagen = self.files.get('imagen_archivo')
