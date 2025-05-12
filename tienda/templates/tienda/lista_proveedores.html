@@ -50,7 +50,7 @@
                         <td>{{ proveedor.proveedor_email }}</td>
                         <td>
                             <a href="{% url 'detalle_proveedor' proveedor.proveedor_id %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
-                            <a href="{% url 'detalle_proveedor' proveedor.proveedor_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <a href="{% url 'editar_proveedor' proveedor.proveedor_id %}" class="btn btn-sm btn-outline-success" title="Editar"><i class="bi bi-pencil-square"></i></a>
                         </td>
                     </tr>
                     {% endfor %}

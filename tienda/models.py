@@ -138,7 +138,7 @@ class TblCliente(models.Model):
     cliente_telefono = models.CharField(max_length=45)
     cliente_email = models.CharField(max_length=45, blank=True, null=True)
     cliente_sexo = models.CharField(max_length=45, blank=True, null=True)
-    cliente_direccion = models.CharField(max_length=45, blank=True, null=True)
+    cliente_direccion = models.CharField(max_length=245, blank=True, null=True)
 
     class Meta:
         managed = False

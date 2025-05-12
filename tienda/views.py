@@ -193,6 +193,57 @@ def detalle_articulo(request, producto_id):
         'descuento_porcentaje': descuento_porcentaje
     })
 
+@login_required
+def editar_proveedor(request, prov_id):
+    proveedor = get_object_or_404(TblProveedor, proveedor_id = prov_id)
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST, instance=proveedor)
+
+        if form.is_valid():
+            proveedor.save()
+            return redirect('lista_proveedores')
+            
+        else:
+            print(form.errors)
+    else:
+        form = ProveedorForm(instance=proveedor)
+
+    return render(request, 'tienda/editar_proveedor.html', {'form': form, 'proveedor': proveedor})
+
+@login_required
+def editar_cliente(request, clien_id):
+    cliente = get_object_or_404(TblCliente, cliente_id = clien_id)
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+
+        if form.is_valid():
+            cliente.save()
+            return redirect('lista_clientes')
+            
+        else:
+            print(form.errors)
+    else:
+        form = ClienteForm(instance=cliente)
+
+    return render(request, 'tienda/editar_cliente.html', {'form': form, 'cliente': cliente})
+
+@login_required
+def editar_usuario(request, id):
+    usuario = get_object_or_404(TblUsuario, id = id)
+    if request.method == 'POST':
+        form = RegistroUsuarioForm(request.POST, instance=usuario)
+
+        if form.is_valid():
+            usuario.save()
+            return redirect('lista_usuarios')
+            
+        else:
+            print(form.errors)
+    else:
+        form = RegistroUsuarioForm(instance=usuario)
+
+    return render(request, 'tienda/editar_usuario.html', {'form': form, 'usuario': usuario})
+
 
 @login_required
 def editar_articulo(request, producto_id):
@@ -265,10 +316,14 @@ def agregar_proveedor(request):
 
 
 @login_required
-def detalle_proveedor(request, proveedor_id):
-    proveedor = get_object_or_404(TblProveedor, pk=proveedor_id)
-    return render(request, 'tienda/detalle_proveedor.html', {'detalle_proveedor': proveedor})
+def detalle_proveedor(request, prov_id):
+    proveedor = get_object_or_404(TblProveedor, pk=prov_id)
+    return render(request, 'tienda/detalle_proveedor.html', {'proveedor': proveedor})
 
+@login_required
+def detalle_cliente(request, clien_id):
+    cliente = get_object_or_404(TblCliente, pk=clien_id)
+    return render(request, 'tienda/detalle_cliente.html', {'cliente': cliente})
 
 @login_required
 def lista_ingresos(request):
@@ -392,12 +447,6 @@ def lista_clientes(request):
 
 
 @login_required
-def detalle_cliente(request, cliente_id):
-    cliente = get_object_or_404(TblCliente, pk=cliente_id)
-    return render(request, 'tienda/detalle_cliente.html', {'cliente': cliente})
-
-
-@login_required
 def agregar_cliente(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST, request.FILES)
@@ -459,6 +508,6 @@ def agregar_usuario(request):
 
 
 @login_required
-def detalle_usuario(request, usuario_id):
-    usuario = get_object_or_404(TblUsuario, pk=usuario_id)
+def detalle_usuario(request, id):
+    usuario = get_object_or_404(TblUsuario, pk=id)
     return render(request, 'tienda/detalle_usuario.html', {'usuario': usuario})

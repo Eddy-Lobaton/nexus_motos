@@ -121,6 +121,14 @@ class ArticuloForm(forms.ModelForm):
     class Meta:
         model = TblProducto
         fields = ['prod_nombre', 'prod_marca', 'prod_modelo', 'prod_motor', 'prod_categoria', 'prod_descripcion', 'prod_porcenta_dcto']
+        labels = {
+            'prod_nombre': 'Nombre',
+            'prod_marca': 'Marca',
+            'prod_modelo': 'Modelo',
+            'prod_motor': 'Motor',
+            'prod_categoria': 'Categoría',
+            'prod_descripcion': 'Descripción',
+        }
         widgets = {
             'prod_nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'prod_marca': forms.TextInput(attrs={'class': 'form-control'}),
@@ -166,6 +174,13 @@ class ProveedorForm(forms.ModelForm):
     class Meta:
         model = TblProveedor
         fields = ['proveedor_nombre', 'proveedor_ruc', 'proveedor_telefono', 'proveedor_direccion', 'proveedor_email']
+        labels = {
+            'proveedor_nombre': 'Nombre',
+            'proveedor_ruc': 'RUC',
+            'proveedor_telefono': 'Teléfono',
+            'proveedor_direccion': 'Dirección',
+            'proveedor_email': 'Email',
+        }
         widgets = {
             'proveedor_nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'proveedor_ruc': forms.TextInput(attrs={'class': 'form-control'}),
@@ -177,16 +192,29 @@ class ProveedorForm(forms.ModelForm):
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = TblCliente
-        fields = ['cliente_nrodocumento', 'cliente_tipodocumento', 'cliente_nombre', 'cliente_paterno', 'cliente_materno', 'cliente_fechanac', 'cliente_telefono', 'cliente_email', 'cliente_sexo', 'cliente_direccion']
+        fields = ['cliente_tipodocumento', 'cliente_nrodocumento', 'cliente_nombre', 'cliente_paterno', 'cliente_materno', 'cliente_direccion', 'cliente_fechanac', 'cliente_telefono', 'cliente_email', 'cliente_sexo']
+
+        labels = {
+            'cliente_nrodocumento': 'Número de documento',
+            'cliente_tipodocumento': 'Tipo de documento',
+            'cliente_nombre': 'Nombres',
+            'cliente_paterno': 'Apellido paterno',
+            'cliente_materno': 'Apellido materno',
+            'cliente_fechanac': 'Fecha de nacimiento',
+            'cliente_telefono': 'Teléfono',
+            'cliente_email': 'Email',
+            'cliente_sexo': 'Sexo',
+            'cliente_direccion':  'Dirección',
+        }
         widgets = {
             'cliente_nrodocumento': forms.TextInput(attrs={'class': 'form-control'}),
-            'cliente_tipodocumento': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_tipodocumento': forms.Select(choices=TIPO_DOCUMENTO_OPCIONES, attrs={'class': 'form-control'}),
             'cliente_nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente_paterno': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente_materno': forms.TextInput(attrs={'class': 'form-control'}),
-            'cliente_fechanac': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_fechanac': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'cliente_telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente_email': forms.TextInput(attrs={'class': 'form-control'}),
-            'cliente_sexo': forms.TextInput(attrs={'class': 'form-control'}),
-            'cliente_direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'cliente_sexo': forms.Select(choices=SEXO, attrs={'class': 'form-control'}),
         }

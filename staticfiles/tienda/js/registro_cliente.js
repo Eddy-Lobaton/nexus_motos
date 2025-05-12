@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
     //**** validar DNI
-    const dniInput = document.querySelector('#id_usuario_nrodocumento');
-    const tipoDocInput = document.querySelector('#id_usuario_tipodocumento');
+    const dniInput = document.querySelector('#id_cliente_nrodocumento');
+    const tipoDocInput = document.querySelector('#id_cliente_tipodocumento');
     const feedbackDivDni = document.createElement('div');
     feedbackDivDni.classList.add('text-danger', 'small');
     dniInput.parentNode.appendChild(feedbackDivDni);
 
     const limpiarCampos = () => {
         //document.querySelector('#id_usuario_nrodocumento').value = '';
-        document.querySelector('#id_usuario_nombre').value = '';
-        document.querySelector('#id_usuario_paterno').value = '';
-        document.querySelector('#id_usuario_materno').value = '';
-        document.querySelector('#id_usuario_direccion').value = '';
+        document.querySelector('#id_cliente_nombre').value = '';
+        document.querySelector('#id_cliente_paterno').value = '';
+        document.querySelector('#id_cliente_materno').value = '';
+        document.querySelector('#id_cliente_direccion').value = '';
     };
 
     const restringirDni = function () {
@@ -69,10 +69,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 if (data.success) {
                                     feedbackDivDni.textContent = "";
                                     dniInput.classList.remove('is-invalid');
-                                    document.querySelector('#id_usuario_nombre').value = data.nombres || '';
-                                    document.querySelector('#id_usuario_paterno').value = data.apellido_paterno || '';
-                                    document.querySelector('#id_usuario_materno').value = data.apellido_materno || '';
-                                    document.querySelector('#id_usuario_direccion').value = data.direccion || '';
+                                    document.querySelector('#id_cliente_nombre').value = data.nombres || '';
+                                    document.querySelector('#id_cliente_paterno').value = data.apellido_paterno || '';
+                                    document.querySelector('#id_cliente_materno').value = data.apellido_materno || '';
+                                    document.querySelector('#id_cliente_direccion').value = data.direccion || '';
                                 } else {
                                     limpiarCampos();
                                     feedbackDivDni.textContent = data.error || "DNI no encontrado.";
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     //**** validar fecha de nacimiento dentro del rango 
-    const fechaInput = document.querySelector('#id_usuario_fechanac');
+    const fechaInput = document.querySelector('#id_cliente_fechanac');
     const feedbackDivFch = document.createElement('div');
     feedbackDivFch.classList.add('text-danger', 'small');
     fechaInput.parentNode.appendChild(feedbackDivFch);
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     //**** Validar email
-    const emailInput = document.querySelector('#id_usuario_email');
+    const emailInput = document.querySelector('#id_cliente_email');
     const feedbackDivEmail = document.createElement('div');
     
     emailInput.parentNode.appendChild(feedbackDivEmail);
@@ -185,37 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .finally(() => {
                 document.getElementById('loadingOverlay').style.display = 'none';
             });
-    });
-
-    //**** Validar username
-    const usernameInput = document.querySelector('#id_username');
-    const feedbackDiv = document.createElement('div');
-    feedbackDiv.classList.add('text-danger', 'small');
-    usernameInput.parentNode.appendChild(feedbackDiv);
-
-    usernameInput.addEventListener('blur', function () {
-        const username = usernameInput.value.trim();
-
-        if (username.length > 0) {
-            fetch(`/registrar/verificar-username/?username=${username}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.existe) {
-                        feedbackDiv.textContent = "El nombre de usuario \""+ username +"\" está en uso.";
-                        usernameInput.classList.add('is-invalid');
-                        usernameInput.value = "";
-                    } else {
-                        feedbackDiv.textContent = "";
-                        usernameInput.classList.remove('is-invalid');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al verificar el usuario:', error);
-                });
-        } else {
-            feedbackDiv.textContent = "";
-            usernameInput.classList.remove('is-invalid');
-        }
     });
 
     //**** Validar usuario antes de registrar
