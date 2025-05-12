@@ -156,6 +156,8 @@ class ArticuloForm(forms.ModelForm):
             raise forms.ValidationError("Ingresa un número entre 0 y 99.")
 
         resultado = (Decimal(valor) / Decimal(100)).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+        print("resultadooooooo")
+        print(resultado)
         # Convertir a decimal (por ejemplo: 10 -> 0.10)
         return resultado
     
