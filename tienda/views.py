@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
-from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm, ClienteForm
+from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm, ClienteForm,IngresoForm
 from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta, TblEntrada,TblTipoDocAlmacen, TblDetEntrada
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -332,6 +332,22 @@ def lista_ingresos(request):
     ).all()
     return render(request, 'tienda/lista_ingresos.html', {'ingresos': ingresos})
 
+@login_required
+def editar_ingreso(request, ingre_id):
+    ingreso = get_object_or_404(TblEntrada, entrada_id = ingre_id)
+    if request.method == 'POST':
+        form = IngresoForm(request.POST, instance=ingreso)
+
+        if form.is_valid():
+            ingreso.save()
+            return redirect('lista_ingresos')
+            
+        else:
+            print(form.errors)
+    else:
+        form = IngresoForm(instance=ingreso)
+
+    return render(request, 'tienda/editar_ingreso.html', {'form': form, 'ingreso': ingreso})
 
 @transaction.atomic
 @login_required

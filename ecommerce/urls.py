@@ -34,6 +34,10 @@ urlpatterns = [
     # INGRESOS-------------------
     path('lista_ingresos/',views.lista_ingresos, name= 'lista_ingresos'),
     path('agregar_ingresos/',views.agregar_ingresos, name= 'agregar_ingresos'),
+    path('editar_ingreso/<int:ingre_id>/', views.editar_ingreso, name='editar_ingreso'),
+
+
+
     # PROVEEDOR-------------------
     path('lista_proveedores/',views.lista_proveedores, name= 'lista_proveedores'),
     path('agregar_proveedor/',views.agregar_proveedor, name= 'agregar_proveedor'),

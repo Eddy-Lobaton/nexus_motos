@@ -1,6 +1,6 @@
 # from django.forms import ModelForm
 from django import forms
-from .models import TblUsuario, TblProducto, TblProveedor,TblCliente
+from .models import TblUsuario, TblProducto, TblProveedor,TblCliente, TblEntrada
 from django.contrib.auth.hashers import make_password
 from datetime import date, timedelta
 from decimal import Decimal, ROUND_DOWN
@@ -219,4 +219,29 @@ class ClienteForm(forms.ModelForm):
             'cliente_telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente_email': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente_sexo': forms.Select(choices=SEXO, attrs={'class': 'form-control'}),
+        }
+
+class IngresoForm(forms.ModelForm):
+    class Meta:
+        model = TblEntrada
+        fields = ['entrada_fecha', 'entrada_subtotal', 'entrada_igv', 'entrada_costo_total', 'entrada_num_doc', 'proveedor','tipo_doc_almacen','usuario']
+        labels = {
+            'entrada_fecha': 'Nombre',
+            'entrada_subtotal': 'RUC',
+            'entrada_igv': 'Teléfono',
+            'entrada_costo_total': 'Dirección',
+            'entrada_num_doc': 'Email',
+            'proveedor': 'proveedor',
+            'tipo_doc_almacen': 'Tipo documento almacen',
+            'usuario' : 'Usuario'
+        }
+        widgets = {
+            'entrada_fecha': forms.TextInput(attrs={'class': 'form-control'}),
+            'entrada_subtotal': forms.TextInput(attrs={'class': 'form-control'}),
+            'entrada_igv': forms.TextInput(attrs={'class': 'form-control'}),
+            'entrada_costo_total': forms.TextInput(attrs={'class': 'form-control'}),
+            'entrada_num_doc': forms.TextInput(attrs={'class': 'form-control'}),
+            'proveedor': forms.TextInput(attrs={'class': 'form-control'}),
+            'tipo_doc_almacen': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuario': forms.TextInput(attrs={'class': 'form-control'}),
         }
