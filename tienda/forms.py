@@ -10,18 +10,25 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, required=True)
 
 # Opciones para tipo de documento
-TIPO_DOCUMENTO_OPCIONES = [
-    ('', 'Seleccionar...'),
-    ('DNI', 'DNI'),
-    ('CE', 'Carnet de extranjería'),
-]
+
 SEXO = [
     ('', 'Seleccionar...'),
     ('FEMENINO', 'Femenino'),
     ('MASCULINO', 'Masculino'),
 ]
 
+TIPO_DOCUMENTO_OPCIONES = [
+    ('', 'Seleccionar...'),
+    ('DNI', 'DNI'),
+    ('CE', 'Carnet de extranjería'),
+]
+
 class RegistroUsuarioForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=False,  # No obligatorio para no forzar cambio al editar
+        label='Contraseña'
+    )
     class Meta:
         model = TblUsuario
         fields = [
@@ -224,13 +231,14 @@ class ClienteForm(forms.ModelForm):
 class IngresoForm(forms.ModelForm):
     class Meta:
         model = TblEntrada
-        fields = ['entrada_fecha', 'entrada_subtotal', 'entrada_igv', 'entrada_costo_total', 'entrada_num_doc', 'proveedor','tipo_doc_almacen','usuario']
+        fields = ['entrada_fecha', 'entrada_subtotal', 'entrada_costo_igv','entrada_igv', 'entrada_costo_total', 'entrada_num_doc', 'proveedor','tipo_doc_almacen','usuario']
         labels = {
-            'entrada_fecha': 'Nombre',
-            'entrada_subtotal': 'RUC',
-            'entrada_igv': 'Teléfono',
-            'entrada_costo_total': 'Dirección',
-            'entrada_num_doc': 'Email',
+            'entrada_fecha': 'Fecha',
+            'entrada_subtotal': 'Subtal',
+            'entrada_costo_igv': 'Costo IGV',
+            'entrada_igv': '% IGV',
+            'entrada_costo_total': 'Costo total',
+            'entrada_num_doc': 'Num. documento',
             'proveedor': 'proveedor',
             'tipo_doc_almacen': 'Tipo documento almacen',
             'usuario' : 'Usuario'
@@ -238,6 +246,7 @@ class IngresoForm(forms.ModelForm):
         widgets = {
             'entrada_fecha': forms.TextInput(attrs={'class': 'form-control'}),
             'entrada_subtotal': forms.TextInput(attrs={'class': 'form-control'}),
+            'entrada_costo_igv': forms.TextInput(attrs={'class': 'form-control'}),
             'entrada_igv': forms.TextInput(attrs={'class': 'form-control'}),
             'entrada_costo_total': forms.TextInput(attrs={'class': 'form-control'}),
             'entrada_num_doc': forms.TextInput(attrs={'class': 'form-control'}),
