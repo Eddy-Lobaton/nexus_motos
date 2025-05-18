@@ -16,10 +16,11 @@ from django.db import transaction
 from decimal import Decimal
 from django.template.loader import render_to_string
 from django.template.loader import get_template
+from django.urls import reverse
+from django.utils.http import urlencode
 from xhtml2pdf import pisa
 from num2words import num2words
 import json
-
 
 import requests
 from django.http import JsonResponse, HttpResponse
@@ -607,7 +608,10 @@ def agregar_venta(request):
                 raise    
 
             messages.success(request, "Venta registrada correctamente.")
-            return redirect(f'lista_ventas/?pdf={venta.venta_id}') # vista de listado
+            url = reverse('lista_ventas') # vista del listado de ventas
+            query_string = urlencode({'pdf': venta.venta_id})
+            full_url = f'{url}?{query_string}'
+            return redirect(full_url)
 
         except Exception as e:
             print("ERROR AL GUARDAR VENTA:", e)
