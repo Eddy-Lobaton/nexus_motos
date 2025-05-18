@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from django.conf import settings
 from .forms import LoginForm, RegistroUsuarioForm, ArticuloForm, ProveedorForm, ClienteForm,IngresoForm
-from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta, TblEntrada,TblTipoDocAlmacen, TblDetEntrada
+from .models import TblUsuario, TblProducto, TblProveedor, TblCliente, TblVenta, TblDetVenta, TblEntrada,TblTipoDocAlmacen, TblDetEntrada, TblMetodoPago, TblSalida, TblDetSalida, TblFinanciamiento, TblDetFinanciamiento
 from django.contrib import messages
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -14,11 +14,15 @@ from django.db.models import Max
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from decimal import Decimal
+from django.template.loader import render_to_string
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from num2words import num2words
 import json
 
 
 import requests
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_GET, require_POST
 
 from django.contrib.auth import get_user_model
@@ -28,7 +32,6 @@ User = get_user_model()
 # Create your views here.
 def home(request):
     return render(request, 'tienda/home.html')
-
 
 def login_view(request):
     if request.method == 'POST':
@@ -87,15 +90,12 @@ def consultar_dni(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-
-
 @require_GET
 @login_required
 def verificar_username(request):
     username = request.GET.get('username', '')
     existe = User.objects.filter(username=username).exists()
     return JsonResponse({'existe': existe})
-
 
 @login_required
 def verificar_datos(request):
@@ -105,7 +105,6 @@ def verificar_datos(request):
     existeEmail = TblUsuario.objects.filter(usuario_email=email).exists() if email else False
 
     return JsonResponse({'existsDoc': existeDoc, 'existsEmail': existeEmail})
-
 
 @login_required
 def registrar_usuario(request):
@@ -122,12 +121,10 @@ def registrar_usuario(request):
         form = RegistroUsuarioForm()
     return render(request, 'tienda/registro.html', {'form': form})
 
-
 @login_required
 def signoup (request):
     logout(request) 
     return redirect('home')
-
 
 @login_required
 def lista_productos(request):
@@ -136,7 +133,6 @@ def lista_productos(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'tienda/productos.html', {'page_obj': page_obj})
-
 
 @login_required
 def lista_articulos(request):
@@ -149,7 +145,6 @@ def lista_articulos(request):
             producto.descuento_porcentaje = 0
 
     return render(request, 'tienda/lista_articulos.html', {'productos': productos})
-
 
 @login_required
 def agregar_articulos(request):
@@ -182,7 +177,6 @@ def agregar_articulos(request):
         form = ArticuloForm()
 
     return render(request, 'tienda/agregar_articulos.html', {'form': form})
-
 
 @login_required
 def detalle_articulo(request, producto_id):
@@ -244,7 +238,6 @@ def editar_usuario(request, id):
 
     return render(request, 'tienda/editar_usuario.html', {'form': form, 'usuario': usuario})
 
-
 @login_required
 def editar_articulo(request, producto_id):
     producto = get_object_or_404(TblProducto, prod_id=producto_id)
@@ -289,12 +282,10 @@ def cambiar_estado_articulo(request, producto_id):
     estado = "activado" if producto.prod_estado else "desactivado"
     return JsonResponse({"message": f'Artículo "{producto.prod_nombre}" ha sido {estado} correctamente.'})
 
-
 @login_required
 def lista_proveedores(request):
     proveedor = TblProveedor.objects.all()
     return render(request, 'tienda/lista_proveedores.html', {'proveedor': proveedor})
-
 
 @login_required
 def agregar_proveedor(request):
@@ -313,7 +304,6 @@ def agregar_proveedor(request):
         form = ProveedorForm()
 
     return render(request, 'tienda/agregar_proveedor.html', {'form': form})
-
 
 @login_required
 def detalle_proveedor(request, prov_id):
@@ -455,12 +445,10 @@ def agregar_ingresos(request):
         #'fecha_min': hace_dos_dias.strftime('%Y-%m-%d'),
     })
 
-
 @login_required
 def lista_clientes(request):
     clientes = TblCliente.objects.all()
     return render(request, 'tienda/lista_clientes.html', {'clientes': clientes})
-
 
 @login_required
 def agregar_cliente(request):
@@ -480,29 +468,215 @@ def agregar_cliente(request):
 
     return render(request, 'tienda/agregar_cliente.html', {'form': form})
 
-
 @login_required
 def lista_ventas(request):
-    ventas = TblVenta.objects.all()
+    ventas = TblVenta.objects.select_related('cliente', 'usuario', 'metodo_pago').all()
     return render(request, 'tienda/lista_ventas.html', {'ventas': ventas})
 
-
+@transaction.atomic
 @login_required
 def agregar_venta(request):
-    return render(request, 'tienda/agregar_venta.html')
+    if request.method == 'POST':
+        try:
+            cliente_id = request.POST.get('cliente')
+            tipo_comprobante = request.POST.get('venta_tipo_comprobante')
+            nro_documento = request.POST.get('venta_nro_documento')
+            metodo_pago_id = request.POST.get('metodo_pago')
+            usuario_id = request.user.id
 
+            subtotal = float(request.POST.get('venta_subtotal'))
+            igv = float(request.POST.get('igv'))
+            costo_igv = float(request.POST.get('venta_igv'))
+            total = float(request.POST.get('venta_total'))
+            monto_efectivo = float(request.POST.get('monto_efectivo'))
+
+            tipo_doc_obj = TblTipoDocAlmacen.objects.get(tipo_doc_almacen_descripcion=tipo_comprobante)
+
+            # 1. Guardar TblVenta
+            try:
+                venta = TblVenta.objects.create(
+                    venta_fecha_venta=timezone.now(),
+                    venta_tipo_comprobante=tipo_comprobante,
+                    venta_nro_documento=nro_documento,
+                    venta_monto_efectivo=monto_efectivo,
+                    venta_subtotal=subtotal,
+                    venta_igv=igv,
+                    venta_costo_igv=costo_igv,
+                    venta_total=total,
+                    metodo_pago_id=metodo_pago_id,
+                    cliente_id=cliente_id,
+                    usuario_id=usuario_id
+                )
+            except Exception as e:
+                print("Error al guardar TblVenta:", e)
+                raise
+
+            # 2. Guardar TblDetVenta
+            try:
+                productos_json = request.POST.get('productos_json')
+                total_productos = json.loads(productos_json)
+                for item in total_productos:
+                    TblDetVenta.objects.create(
+                        venta=venta,
+                        prod_id=item['id'],
+                        det_venta_cantidad=item['cantidad'],
+                        det_venta_precio_unitario=float(item['precio']),
+                        det_venta_subtotal=float(item['costo']),
+                        det_venta_dcto=float(item['descuentoT']),
+                        det_venta_total=float(item['subtotal'])
+                    )
+            except Exception as e:
+                print("Error al guardar TblDetVenta:", e)
+                raise
+
+            # 3. Guardar TblSalida
+            try:
+                salida = TblSalida.objects.create(
+                    salida_fecha=timezone.now(),
+                    salida_num_doc=nro_documento,
+                    salida_subtotal=subtotal,
+                    salida_igv=igv,
+                    salida_costo_igv=costo_igv,
+                    salida_costo_total=total,
+                    salida_motivo='VENTA',
+                    tipo_doc_almacen_id=tipo_doc_obj.tipo_doc_almacen_id,
+                    usuario_id=usuario_id
+                )
+            except Exception as e:
+                print("Error al guardar TblSalida:", e)
+                raise
+
+            # 4. Guardar TblDetSalida
+            try:
+                for item in total_productos:
+                    cantidad = item['cantidad']
+                    subtotal_item = float(item['subtotal'])
+                    precio_salida = float(subtotal_item / cantidad if cantidad else 0)
+
+                    TblDetSalida.objects.create(
+                        salida=salida,
+                        prod_id=item['id'],
+                        det_salida_cantidad=cantidad,
+                        det_salida_sub_total=subtotal_item,
+                        det_salida_precio_salida=precio_salida
+                    )
+            except Exception as e:
+                print("Error al guardar TblDetSalida:", e)
+                raise
+
+            # 5. Si hay financiamiento
+            try:
+                metodo_pago_nombre = TblMetodoPago.objects.get(metodo_pago_id=metodo_pago_id).metodo_pago_descrip.lower()
+                if metodo_pago_nombre in ['credito', 'mixto']:
+                    monto_financiar = float(request.POST.get('monto_financiar', 0))
+                    num_cuotas = int(request.POST.get('num_cuotas'))
+                    tasa_interes = float(request.POST.get('tasa_interes'))
+                    total_interes = float(request.POST.get('total_interes'))
+                    total_financiamiento = float(request.POST.get('total_financiamiento'))
+                    pago_mensual = float(request.POST.get('pago_mensual'))
+                    fecha_pago_opcion = int(request.POST.get('fecha_pago'))
+
+                    financiamiento = TblFinanciamiento.objects.create(
+                        financia_monto_financiado=monto_financiar,
+                        financia_numero_cuotas=num_cuotas,
+                        financia_tasa_interes=tasa_interes,
+                        financia_total_interes=total_interes,
+                        financia_monto_total=total_financiamiento,
+                        financia_fecha_registro=date.today(),
+                        financia_estado='PENDIENTE',
+                        venta=venta
+                    )
+
+                    for i in range(num_cuotas):
+                        mes = date.today().month + i + 1
+                        año = date.today().year
+                        if mes > 12:
+                            mes -= 12
+                            año += 1
+                        fecha_cuota = date(año, mes, fecha_pago_opcion)
+
+                        TblDetFinanciamiento.objects.create(
+                            det_finan_num_cuota=i + 1,
+                            det_finan_monto_cuota=pago_mensual,
+                            det_finan_fch_pago_max=fecha_cuota,
+                            det_finan_estado_pago='PENDIENTE',
+                            financia=financiamiento
+                        )
+            except Exception as e:
+                print("Error al guardar financiamiento:", e)
+                raise    
+
+            messages.success(request, "Venta registrada correctamente.")
+            return redirect(f'lista_ventas/?pdf={venta.venta_id}') # vista de listado
+
+        except Exception as e:
+            print("ERROR AL GUARDAR VENTA:", e)
+            transaction.set_rollback(True)
+            messages.error(request, f"Ocurrió un error: {str(e)}")
+            return redirect("agregar_venta")
+            
+    else:
+        # Vista GET: cargar formulario
+        clientes = TblCliente.objects.all()
+        comprobantes = TblTipoDocAlmacen.objects.filter(tipo_doc_almacen_tipo='ES')
+        metodos_pago = TblMetodoPago.objects.all()
+        productos = TblProducto.objects.filter(prod_estado=True)
+        nro_documento = f"V-{TblVenta.objects.count() + 1:05d}"
+        
+        context = {
+            'clientes': clientes,
+            'comprobantes': comprobantes,
+            'metodos_pago': metodos_pago,
+            'productos': productos,
+            'nro_documento': nro_documento
+        }
+        return render(request, 'tienda/agregar_venta.html', context)
+
+def numero_a_letras(numero):
+    return num2words(numero, lang='es').upper() + ' NUEVOS SOLES'
+
+@login_required
+def generar_pdf_venta(request, venta_id):
+    venta = get_object_or_404(TblVenta, pk=venta_id)
+    detalle_venta = TblDetVenta.objects.filter(venta=venta)
+    financiamiento = TblFinanciamiento.objects.filter(venta=venta).first()
+    detalle_financiamiento = TblDetFinanciamiento.objects.filter(financia=financiamiento) if financiamiento else []
+
+    descuento_total = sum(item.det_venta_dcto for item in detalle_venta)
+    total_letras = numero_a_letras(venta.venta_total)
+    
+    # Reemplaza con tus propios contextos reales
+    context = {
+        'venta': venta,
+        'detalle_venta': detalle_venta,
+        'financiamiento': financiamiento,
+        'detalle_financiamiento': detalle_financiamiento,
+        'descuento_total': descuento_total,
+        'total_letras': total_letras,
+    }
+
+    template_path = 'tienda/venta_pdf.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="venta_{venta_id}.pdf"'
+    
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    
+    return response
 
 @login_required
 def detalle_venta(request, venta_id):
     venta = get_object_or_404(TblVenta, pk=venta_id)
     return render(request, 'tienda/detalle_venta.html', {'venta': venta})
 
-
 @login_required
 def lista_usuarios(request):
     usuarios  = TblUsuario.objects.all()
     return render(request, 'tienda/lista_usuarios.html', {'usuarios': usuarios})
-
 
 @login_required
 def agregar_usuario(request):
@@ -521,7 +695,6 @@ def agregar_usuario(request):
         form = RegistroUsuarioForm()
 
     return render(request, 'tienda/agregar_usuario.html', {'form': form})
-
 
 @login_required
 def detalle_usuario(request, id):

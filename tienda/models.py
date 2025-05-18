@@ -173,7 +173,7 @@ class TblDetFinanciamiento(models.Model):
 
 
 class TblDetSalida(models.Model):
-    det_salida_id = models.IntegerField(primary_key=True)
+    det_salida_id = models.AutoField(primary_key=True)
     det_salida_cantidad = models.IntegerField(blank=True, null=True)
     det_salida_precio_salida = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     det_salida_sub_total = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
@@ -294,7 +294,7 @@ class TblProveedor(models.Model):
 
 
 class TblSalida(models.Model):
-    salida_id = models.IntegerField(primary_key=True)
+    salida_id = models.AutoField(primary_key=True)
     salida_fecha = models.DateField()
     salida_subtotal = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     salida_costo_igv = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
@@ -312,7 +312,7 @@ class TblSalida(models.Model):
 
 
 class TblTipoDocAlmacen(models.Model):
-    tipo_doc_almacen_id = models.IntegerField(primary_key=True)
+    tipo_doc_almacen_id = models.AutoField(primary_key=True)
     tipo_doc_almacen_descripcion = models.CharField(max_length=45)
     tipo_doc_almacen_tipo = models.CharField(max_length=45)
 
