@@ -348,12 +348,13 @@ def agregar_ingresos(request):
             proveedor_id = request.POST.get("proveedor_id")
             tipo_doc_id = request.POST.get("tipo_doc_almacen_id")
             entrada_num_doc = request.POST.get("entrada_num_doc")
-            entrada_fecha = request.POST.get("entrada_fecha")
+            #entrada_fecha = request.POST.get("entrada_fecha")
             entrada_igv = float(request.POST.get("entrada_igv", 0))
             entrada_subtotal = float(request.POST.get("subtotal_entrada") or 0)
+            entrada_monto_igv = float(request.POST.get("montoIgv_entrada") or 0)
             entrada_total = float(request.POST.get("total_entrada") or 0)
 
-            articulos_json = request.POST.get("articulos")  # Este será un JSON con los productos
+            articulos_json = request.POST.get("articulos")  # Este es un JSON con los productos
             articulos = json.loads(articulos_json)
 
             if not articulos:
@@ -370,6 +371,7 @@ def agregar_ingresos(request):
                 entrada_fecha=timezone.now(),  #entrada_fecha,
                 entrada_num_doc=entrada_num_doc,
                 entrada_subtotal=entrada_subtotal,
+                entrada_costo_igv=entrada_monto_igv,
                 entrada_igv=entrada_igv,
                 entrada_costo_total=entrada_total,
                 proveedor_id=proveedor_id,
@@ -637,7 +639,11 @@ def agregar_venta(request):
         return render(request, 'tienda/agregar_venta.html', context)
 
 def numero_a_letras(numero):
-    return num2words(numero, lang='es').upper() + ' NUEVOS SOLES'
+    parte_entera = int(numero)
+    parte_decimal = int(round((numero - parte_entera) * 100))
+
+    texto = num2words(parte_entera, lang='es').upper()
+    return f"{texto} Y {parte_decimal:02d}/100 NUEVOS SOLES"
 
 @login_required
 def generar_pdf_venta(request, venta_id):
@@ -661,7 +667,7 @@ def generar_pdf_venta(request, venta_id):
 
     template_path = 'tienda/venta_pdf.html'
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="venta_{venta_id}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="venta_{venta_id}.pdf"'
     
     template = get_template(template_path)
     html = template.render(context)
