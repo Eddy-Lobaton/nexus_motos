@@ -84,11 +84,11 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('nexus_motos'),
-        'USER': os.environ.get('root'),
-        'PASSWORD': os.environ.get('cbZvpGNHLtCvJeMzaZEdgYGidiaFPBQP'),
-        'HOST': os.environ.get('switchback.proxy.rlwy.net'),
-        'PORT': os.environ.get('DB_PORT', '21115'),
+        'NAME': config('nexus_motos'),
+        'USER': config('root'),
+        'PASSWORD': config('cbZvpGNHLtCvJeMzaZEdgYGidiaFPBQP'),
+        'HOST': config('switchback.proxy.rlwy.net'),
+        'PORT': config('DB_PORT', '21115'),
     }
 }
 
