@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-oxhj21oz3%9(&l3!%2(my@tqnzj8@@)n_0gt-l6!b9epc2jp1v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)  #True para desarrollo local y False para RAILWAY... 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['nexus-motos-1.onrender.com']
 
 
 # Application definition
